@@ -36,21 +36,32 @@ struct RemoteKeyboardHost: UIViewRepresentable {
 
     func updateUIView(_ uiView: KeyboardCaptureField, context: Context) {
         context.coordinator.parent = self
-        if isActive {
-            if !uiView.isFirstResponder {
-                uiView.becomeFirstResponder()
-            }
-        } else if uiView.isFirstResponder {
-            uiView.resignFirstResponder()
-        }
+        // 帧刷新会高频触发 updateUIView；仅在激活状态变化时改 first responder，
+        // 否则中文/系统 IME 会反复重建并卡死主线程。
+        context.coordinator.applyActiveState(isActive, to: uiView)
     }
 
     final class Coordinator: NSObject, UITextFieldDelegate {
         var parent: RemoteKeyboardHost
         weak var field: KeyboardCaptureField?
+        private var appliedActive: Bool?
 
         init(parent: RemoteKeyboardHost) {
             self.parent = parent
+        }
+
+        func applyActiveState(_ active: Bool, to field: KeyboardCaptureField) {
+            guard appliedActive != active else { return }
+            appliedActive = active
+            if active {
+                DispatchQueue.main.async {
+                    if !field.isFirstResponder {
+                        field.becomeFirstResponder()
+                    }
+                }
+            } else if field.isFirstResponder {
+                field.resignFirstResponder()
+            }
         }
 
         @objc func editingChanged(_ textField: UITextField) {
@@ -60,11 +71,11 @@ struct RemoteKeyboardHost: UIViewRepresentable {
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             if string == "\n" {
                 flushCommittedText(textField)
-                parent.onReturn()
+                dispatchReturn()
                 return false
             }
             if string.isEmpty, (textField.text ?? "").isEmpty, textField.markedTextRange == nil {
-                parent.onDelete()
+                dispatchDelete()
                 return false
             }
             return true
@@ -72,21 +83,39 @@ struct RemoteKeyboardHost: UIViewRepresentable {
 
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
             flushCommittedText(textField)
-            parent.onReturn()
+            dispatchReturn()
             return false
         }
 
         func textFieldDidEndEditing(_ textField: UITextField) {
             flushCommittedText(textField)
-            if parent.isActive {
-                parent.isActive = false
+        }
+
+        private func dispatchInsert(_ text: String) {
+            let handler = parent.onInsert
+            DispatchQueue.main.async {
+                handler(text)
+            }
+        }
+
+        private func dispatchDelete() {
+            let handler = parent.onDelete
+            DispatchQueue.main.async {
+                handler()
+            }
+        }
+
+        private func dispatchReturn() {
+            let handler = parent.onReturn
+            DispatchQueue.main.async {
+                handler()
             }
         }
 
         private func flushCommittedText(_ textField: UITextField) {
             guard textField.markedTextRange == nil, let text = textField.text, !text.isEmpty else { return }
-            parent.onInsert(text)
             textField.text = ""
+            dispatchInsert(text)
         }
     }
 }
@@ -97,4 +126,7 @@ final class KeyboardCaptureField: UITextField {
     override func caretRect(for position: UITextPosition) -> CGRect { .zero }
 
     override func selectionRects(for range: UITextRange) -> [UITextSelectionRect] { [] }
+
+    /// 避免隐藏 TextField 被选中时弹出放大镜 / 选择菜单干扰 IME
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool { false }
 }

@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5264606610274C2083D2A102"
+               BlueprintIdentifier = "2FD116EA4C464134B630625D"
                BuildableName = "RDPAirPlay.app"
                BlueprintName = "RDPAirPlay"
                ReferencedContainer = "container:RDPAirPlay.xcodeproj">
@@ -42,7 +42,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5264606610274C2083D2A102"
+            BlueprintIdentifier = "2FD116EA4C464134B630625D"
             BuildableName = "RDPAirPlay.app"
             BlueprintName = "RDPAirPlay"
             ReferencedContainer = "container:RDPAirPlay.xcodeproj">
@@ -59,7 +59,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5264606610274C2083D2A102"
+            BlueprintIdentifier = "2FD116EA4C464134B630625D"
             BuildableName = "RDPAirPlay.app"
             BlueprintName = "RDPAirPlay"
             ReferencedContainer = "container:RDPAirPlay.xcodeproj">

@@ -6,10 +6,44 @@
 
 typedef struct rdp_bridge_handle rdp_bridge_handle;
 
+typedef enum {
+    RDP_BRIDGE_INPUT_MOUSE = 1,
+    RDP_BRIDGE_INPUT_KEY,
+    RDP_BRIDGE_INPUT_TEXT,
+} rdp_bridge_input_type;
+
+typedef struct rdp_bridge_input_item {
+    rdp_bridge_input_type type;
+    union {
+        struct {
+            int x;
+            int y;
+            int button;
+            int action;
+            int delta_x;
+            int delta_y;
+        } mouse;
+        struct {
+            uint16_t key_code;
+            int action;
+            uint8_t modifiers;
+        } key;
+        char* text;
+    } u;
+    struct rdp_bridge_input_item* next;
+} rdp_bridge_input_item;
+
+typedef struct {
+    rdp_bridge_input_item* head;
+    rdp_bridge_input_item* tail;
+    pthread_mutex_t mutex;
+} rdp_bridge_input_queue;
+
 typedef struct rdp_freerdp_context {
     void* instance;
     pthread_t thread;
     int running;
+    rdp_bridge_input_queue input_queue;
 } rdp_freerdp_context;
 
 int rdp_freerdp_connect_async(rdp_bridge_handle* handle);

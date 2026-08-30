@@ -18,6 +18,7 @@ final class NativeRDPSession: RDPSessionHandling {
     private var handle: UnsafeMutableRawPointer?
     private let lock = NSLock()
     private var connectContinuation: CheckedContinuation<Void, Error>?
+    private let frameProcessingQueue = DispatchQueue(label: "com.rdpairplay.frame-decode", qos: .userInitiated)
 
     private var lastHost = ""
     private var lastPort = 3389
@@ -80,10 +81,15 @@ final class NativeRDPSession: RDPSessionHandling {
     }
 
     func disconnect() async {
-        guard let handle else { return }
-        rdp_bridge_disconnect(handle)
-        rdp_bridge_destroy(handle)
-        self.handle = nil
+        guard let bridgeHandle = handle else { return }
+        handle = nil
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            DispatchQueue.global(qos: .userInitiated).async {
+                rdp_bridge_disconnect(bridgeHandle)
+                rdp_bridge_destroy(bridgeHandle)
+                continuation.resume()
+            }
+        }
     }
 
     func setResolution(width: Int, height: Int) async throws {
@@ -124,14 +130,20 @@ final class NativeRDPSession: RDPSessionHandling {
     }
 
     fileprivate func handleFrame(_ frame: rdp_bridge_frame) {
-        let image = RDPFrameConverter.image(from: frame)
-        let rdpFrame = RDPFrame(
-            width: Int(frame.width),
-            height: Int(frame.height),
-            image: image,
-            timestamp: frame.timestamp
-        )
-        delegate?.sessionDidReceiveFrame(rdpFrame)
+        let width = Int(frame.width)
+        let height = Int(frame.height)
+        let stride = frame.stride > 0 ? Int(frame.stride) : width * 4
+        guard width > 0, height > 0, let pixels = frame.pixels else { return }
+
+        let dataSize = stride * height
+        let pixelCopy = Data(bytes: pixels, count: dataSize)
+        let timestamp = frame.timestamp
+
+        frameProcessingQueue.async { [weak self] in
+            let image = RDPFrameConverter.image(fromCopiedPixels: pixelCopy, width: width, height: height, stride: stride)
+            let rdpFrame = RDPFrame(width: width, height: height, image: image, timestamp: timestamp)
+            self?.delegate?.sessionDidReceiveFrame(rdpFrame)
+        }
     }
 
     fileprivate func handleEvent(type: Int32, message: String) {

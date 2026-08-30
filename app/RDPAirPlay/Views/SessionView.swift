@@ -18,28 +18,41 @@ struct SessionView: View {
     @State private var useSystemKeyboard = false
     @State private var showAirPlayMenu = false
     @StateObject private var orientationManager = SessionOrientationManager.shared
+    @StateObject private var inputCoordinator = SessionInputCoordinator()
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color.black.ignoresSafeArea()
+            sessionRoot
+        }
+    }
 
-                VStack(spacing: 0) {
-                    if externalDisplay.useExtendedLayout {
-                        extendedSessionLayout
-                    } else {
-                        phoneSessionLayout
-                    }
+    private var sessionRoot: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
 
-                    if !externalDisplay.useExtendedLayout {
-                        bottomPanel
-                    }
+            VStack(spacing: 0) {
+                if externalDisplay.useExtendedLayout {
+                    extendedSessionLayout
+                } else {
+                    SecondScreenGuideView(
+                        controller: controller,
+                        externalDisplay: externalDisplay,
+                        onRefresh: { externalDisplay.refreshConnection() },
+                        onDisconnect: { Task { await disconnectAndDismiss() } }
+                    )
+                }
 
-                    sessionInputHosts
+                SessionInputHosts(
+                    coordinator: inputCoordinator,
+                    showKeyboard: $showKeyboard,
+                    useSystemKeyboard: $useSystemKeyboard
+                )
+                .equatable()
 
-                    SessionExternalDisplayHost()
-                        .frame(width: 0, height: 0)
+                SessionExternalDisplayHost()
+                    .frame(width: 0, height: 0)
 
+                if externalDisplay.useExtendedLayout {
                     SessionToolbar(
                         controller: controller,
                         externalDisplay: externalDisplay,
@@ -49,58 +62,60 @@ struct SessionView: View {
                         orientationManager: orientationManager,
                         onDisconnect: { Task { await disconnectAndDismiss() } }
                     )
-                    .onChange(of: showKeyboard) { isOpen in
-                        if !isOpen {
-                            useSystemKeyboard = false
-                        }
-                    }
                 }
             }
-            .navigationBarHidden(true)
-            .task {
-                await connect()
-            }
-            .onAppear {
-                orientationManager.apply()
-                externalDisplay.beginSessionOutput()
-                controller.onDisplayImage = { image in
-                    externalDisplay.presentDesktopImage(image)
+            .onChange(of: showKeyboard) { isOpen in
+                if !isOpen {
+                    useSystemKeyboard = false
                 }
-                controller.onCursor = { cursor in
-                    externalDisplay.presentCursor(cursor)
-                }
-                externalDisplay.presentDesktopImage(controller.displayImage)
-                externalDisplay.presentCursor(controller.cursor)
             }
-            .onDisappear {
-                controller.onDisplayImage = nil
-                controller.onCursor = nil
-                externalDisplay.endSessionOutput()
-                orientationManager.reset()
+        }
+        .navigationBarHidden(true)
+        .task {
+            await connect()
+        }
+        .onAppear {
+            orientationManager.apply()
+            inputCoordinator.attach(to: controller)
+            externalDisplay.beginSessionOutput()
+            controller.onDisplayImage = { image in
+                externalDisplay.presentDesktopImage(image)
             }
-            .confirmationDialog(
-                "电视扩展屏",
-                isPresented: $showAirPlayMenu,
-                titleVisibility: .visible
-            ) {
-                airPlayDialogActions
-            } message: {
-                Text(airPlayDialogMessage)
+            controller.onCursor = { cursor in
+                externalDisplay.presentCursor(cursor)
             }
-            .alert("连接失败", isPresented: $showErrorAlert) {
-                Button("返回") { Task { await disconnectAndDismiss() } }
-            } message: {
-                Text(controller.lastError?.errorDescription ?? "未知错误")
-            }
-            .onChange(of: controller.lastError) { error in
-                showErrorAlert = error != nil && !controller.state.isActive
-            }
-            .onChange(of: controller.colorMode) { _ in
-                externalDisplay.presentDesktopImage(controller.displayImage)
-            }
-            .sheet(isPresented: $showSettings) {
-                sessionSettingsSheet
-            }
+            externalDisplay.presentDesktopImage(controller.displayImage)
+            externalDisplay.presentCursor(controller.cursor)
+        }
+        .onDisappear {
+            controller.onDisplayImage = nil
+            controller.onCursor = nil
+            externalDisplay.endSessionOutput()
+            orientationManager.reset()
+            ScreenWakeLock.reset()
+        }
+        .confirmationDialog(
+            "电视扩展屏",
+            isPresented: $showAirPlayMenu,
+            titleVisibility: .visible
+        ) {
+            airPlayDialogActions
+        } message: {
+            Text(airPlayDialogMessage)
+        }
+        .alert("连接失败", isPresented: $showErrorAlert) {
+            Button("返回") { Task { await disconnectAndDismiss() } }
+        } message: {
+            Text(controller.lastError?.errorDescription ?? "未知错误")
+        }
+        .onChange(of: controller.lastError) { error in
+            showErrorAlert = error != nil && !controller.state.isActive
+        }
+        .onChange(of: controller.colorMode) { _ in
+            externalDisplay.presentDesktopImage(controller.displayImage)
+        }
+        .sheet(isPresented: $showSettings) {
+            sessionSettingsSheet
         }
     }
 
@@ -118,75 +133,6 @@ struct SessionView: View {
                 useSystemKeyboard: $useSystemKeyboard
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-    }
-
-    private var phoneSessionLayout: some View {
-        ZStack(alignment: .top) {
-            RemoteDesktopView(controller: controller)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-            VStack(spacing: 8) {
-                SessionConnectionBar(
-                    controller: controller,
-                    externalDisplay: externalDisplay,
-                    showKeyboard: $showKeyboard,
-                    showAirPlayMenu: $showAirPlayMenu
-                )
-                if externalDisplay.isExternalConnected {
-                    Text(externalDisplay.statusCaption)
-                        .font(.caption2)
-                        .foregroundStyle(.white.opacity(0.9))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(.black.opacity(0.55), in: Capsule())
-                }
-                Spacer()
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var bottomPanel: some View {
-        if showKeyboard {
-            if useSystemKeyboard {
-                WindowsAuxiliaryKeyboardView(controller: controller)
-            } else {
-                WindowsRemoteKeyboardPanel(controller: controller) {
-                    useSystemKeyboard = true
-                }
-            }
-        } else {
-            ModifierKeyBar(controller: controller)
-        }
-    }
-
-    private var sessionInputHosts: some View {
-        Group {
-            RemoteKeyboardHost(
-                isActive: Binding(
-                    get: { showKeyboard && useSystemKeyboard },
-                    set: { active in
-                        if !active {
-                            useSystemKeyboard = false
-                        }
-                    }
-                ),
-                onInsert: { controller.sendText($0) },
-                onDelete: { controller.sendKeyTap(RDPScanCode.backspace) },
-                onReturn: { controller.sendKeyTap(RDPScanCode.enter) }
-            )
-            .frame(width: 1, height: 1)
-            .opacity(0.01)
-            .allowsHitTesting(false)
-
-            HardwareKeyboardHost(
-                controller: controller,
-                softwareKeyboardVisible: $showKeyboard
-            )
-            .frame(width: 1, height: 1)
-            .opacity(0.01)
-            .allowsHitTesting(false)
         }
     }
 
@@ -229,7 +175,7 @@ struct SessionView: View {
         Button("刷新检测") {
             externalDisplay.refreshConnection()
         }
-        if externalDisplay.kind != .none {
+        if externalDisplay.kind != .none, externalDisplay.kind != .mirrored {
             Button("改用镜像（不推荐）") {
                 externalDisplay.applyMode(.mirror)
             }

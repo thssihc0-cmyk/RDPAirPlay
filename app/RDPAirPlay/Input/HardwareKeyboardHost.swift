@@ -4,11 +4,11 @@ import UIKit
 
 /// 捕获蓝牙 / 妙控等外接键盘，映射为 RDP 扫描码
 struct HardwareKeyboardHost: UIViewRepresentable {
-    @ObservedObject var controller: RDPSessionController
-    @Binding var softwareKeyboardVisible: Bool
+    var softwareKeyboardVisible: Bool
+    var onHardwareKey: (_ code: UInt16, _ action: RDPKeyEvent.Action) -> Void
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(controller: controller)
+        Coordinator(onHardwareKey: onHardwareKey)
     }
 
     func makeUIView(context: Context) -> HardwareKeyboardCaptureView {
@@ -20,24 +20,27 @@ struct HardwareKeyboardHost: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: HardwareKeyboardCaptureView, context: Context) {
-        context.coordinator.controller = controller
+        context.coordinator.onHardwareKey = onHardwareKey
         context.coordinator.refreshCaptureState(softwareKeyboardVisible: softwareKeyboardVisible)
     }
 
     final class Coordinator {
-        var controller: RDPSessionController
+        var onHardwareKey: (_ code: UInt16, _ action: RDPKeyEvent.Action) -> Void
         weak var captureView: HardwareKeyboardCaptureView?
         private var softwareKeyboardVisible = false
+        private var appliedCaptureEnabled: Bool?
         private var observers: [NSObjectProtocol] = []
 
-        init(controller: RDPSessionController) {
-            self.controller = controller
+        init(onHardwareKey: @escaping (_ code: UInt16, _ action: RDPKeyEvent.Action) -> Void) {
+            self.onHardwareKey = onHardwareKey
             let center = NotificationCenter.default
             observers.append(center.addObserver(forName: .GCKeyboardDidConnect, object: nil, queue: .main) { [weak self] _ in
                 guard let self else { return }
                 self.refreshCaptureState(softwareKeyboardVisible: self.softwareKeyboardVisible)
             })
             observers.append(center.addObserver(forName: .GCKeyboardDidDisconnect, object: nil, queue: .main) { [weak self] _ in
+                self?.appliedCaptureEnabled = false
+                self?.captureView?.isHardwareCaptureEnabled = false
                 self?.captureView?.resignFirstResponder()
             })
         }
@@ -50,27 +53,25 @@ struct HardwareKeyboardHost: UIViewRepresentable {
             self.softwareKeyboardVisible = softwareKeyboardVisible
             guard let captureView else { return }
             let hardwareConnected = GCKeyboard.coalesced != nil
-            captureView.isHardwareCaptureEnabled = hardwareConnected && !softwareKeyboardVisible
-            if captureView.isHardwareCaptureEnabled {
+            let enabled = hardwareConnected && !softwareKeyboardVisible
+            if appliedCaptureEnabled == enabled {
+                return
+            }
+            appliedCaptureEnabled = enabled
+            captureView.isHardwareCaptureEnabled = enabled
+            if enabled {
                 captureView.becomeFirstResponder()
-            } else {
+            } else if captureView.isFirstResponder {
                 captureView.resignFirstResponder()
             }
         }
 
         func handlePresses(_ presses: Set<UIPress>, ended: Bool) {
             let action: RDPKeyEvent.Action = ended ? .up : .down
-            var events: [(UInt16, RDPKeyEvent.Action)] = []
             for press in presses {
                 guard let key = press.key,
                       let code = HardwareKeyboardMapper.rdpScanCode(for: key) else { continue }
-                events.append((code, action))
-            }
-            guard !events.isEmpty else { return }
-            Task { @MainActor in
-                for (code, action) in events {
-                    controller.sendHardwareKey(code, action: action)
-                }
+                onHardwareKey(code, action)
             }
         }
     }

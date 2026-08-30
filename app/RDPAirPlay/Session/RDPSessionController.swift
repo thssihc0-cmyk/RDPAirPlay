@@ -9,30 +9,52 @@ final class RDPSessionController: ObservableObject {
     @Published private(set) var lastError: RDPConnectionError?
     @Published var colorMode: ColorMode = .fullColor
     @Published var lockColorMode = false
-    @Published private(set) var latestFrame: RDPFrame?
+    /// 仅供调试/镜像预览；不 @Published，避免打字时整页 SwiftUI 重绘
+    private(set) var latestFrame: RDPFrame?
     @Published var viewportScale: CGFloat = 1.0
     @Published var viewportOffset: CGSize = .zero
     /// 鼠标指针模式下缩放焦点（桌面内容坐标 / 屏幕坐标）
     @Published var viewportFocalContent: CGPoint = .zero
     @Published var viewportFocalScreen: CGPoint = .zero
+    /// 画布在下一帧以光标为锚点应用该缩放（顶部放大镜）
+    @Published var pendingZoomScale: CGFloat?
     @Published var mouseMode: RemoteMouseMode = .mousePointer
     @Published var activeModifiers: RDPSessionModifiers = []
-    @Published var cursor: RDPCursor = .hidden
+    private(set) var cursor: RDPCursor = .hidden
     var onCursor: ((RDPCursor) -> Void)?
 
     private var userMovedCursor = false
     private var trackpadPanActive = false
     private var remotePointer: CGPoint?
 
+    var isViewportZoomed: Bool { viewportScale > 1.01 }
+
+    /// 顶部放大镜：在光标处 1× ↔ 2× 切换
+    func toggleViewportZoom() {
+        if isViewportZoomed {
+            viewportScale = 1
+            viewportOffset = .zero
+            viewportFocalContent = .zero
+            viewportFocalScreen = .zero
+            pendingZoomScale = nil
+        } else {
+            pendingZoomScale = 2
+        }
+    }
+
     /// 当前应投到第二屏的画面（已套色彩模式）
-    var displayImage: UIImage? {
-        guard let image = latestFrame?.image else { return nil }
+    func displayImage(for frame: RDPFrame?) -> UIImage? {
+        guard let image = frame?.image else { return nil }
         if colorMode == .fullColor { return image }
         guard let cg = image.cgImage,
               let processed = ColorModeProcessor.apply(colorMode, to: cg) else {
             return image
         }
         return UIImage(cgImage: processed)
+    }
+
+    var displayImage: UIImage? {
+        displayImage(for: latestFrame)
     }
 
     var onDisplayImage: ((UIImage?) -> Void)?
@@ -43,6 +65,14 @@ final class RDPSessionController: ObservableObject {
     private var host: HostProfile?
     private var session: RDPSessionHandling?
     private var password: String = ""
+    private var desktopWidth = 1920
+    private var desktopHeight = 1080
+    private var lastDisplayPresentTime: CFTimeInterval = 0
+    private let minDisplayInterval: CFTimeInterval = 1.0 / 20.0
+    private var pendingPresentScheduled = false
+
+    /// 合并高频帧/光标回调，避免打字时主线程 Task 堆积导致卡死被系统杀进程
+    private let uiUpdateBuffer = UIUpdateCoalesceBuffer()
 
     func reportLocalError(_ message: String) {
         lastError = .invalidConfiguration(message)
@@ -56,12 +86,22 @@ final class RDPSessionController: ObservableObject {
         lockColorMode = host.lockColorMode
         state = .connecting
         lastError = nil
+        ScreenWakeLock.acquire()
 
         let session = RDPSessionFactory.makeSession()
         session.delegate = self
         self.session = session
 
         do {
+            if host.enableMicrophone {
+                let granted = await audioManager.requestMicrophoneAccessIfNeeded()
+                guard granted else {
+                    self.session = nil
+                    ScreenWakeLock.release()
+                    reportLocalError("未获得麦克风权限，请在「设置 → RDP AirPlay → 麦克风」中允许访问。")
+                    return
+                }
+            }
             try await audioManager.configureForRemoteDesktop(
                 speaker: host.enableSpeaker,
                 microphone: host.enableMicrophone
@@ -80,6 +120,8 @@ final class RDPSessionController: ObservableObject {
                 enableMicrophone: host.enableMicrophone
             )
             try await session.connect(options: options)
+            desktopWidth = host.effectiveWidth
+            desktopHeight = host.effectiveHeight
         } catch let error as RDPConnectionError {
             await handleFailure(error)
         } catch {
@@ -100,6 +142,7 @@ final class RDPSessionController: ObservableObject {
         latestFrame = nil
         cursor = .hidden
         onCursor?(.hidden)
+        ScreenWakeLock.release()
     }
 
     func changeResolution(width: Int, height: Int) async {
@@ -267,6 +310,9 @@ final class RDPSessionController: ObservableObject {
     }
 
     private var desktopSize: CGSize {
+        if desktopWidth > 0, desktopHeight > 0 {
+            return CGSize(width: desktopWidth, height: desktopHeight)
+        }
         if let frame = latestFrame {
             return CGSize(width: max(frame.width, 1), height: max(frame.height, 1))
         }
@@ -288,6 +334,7 @@ final class RDPSessionController: ObservableObject {
         audioManager.deactivate()
         await session?.disconnect()
         session = nil
+        ScreenWakeLock.release()
     }
 
     private func applyAdaptiveColorModeIfNeeded() {
@@ -316,35 +363,74 @@ extension RDPSessionController: RDPSessionDelegate {
             lastError = error
             networkMonitor.stop()
             audioManager.deactivate()
+            ScreenWakeLock.release()
         }
     }
 
     nonisolated func sessionDidReceiveFrame(_ frame: RDPFrame) {
+        let schedule = uiUpdateBuffer.enqueueFrame(frame)
+        guard schedule else { return }
         Task { @MainActor in
-            latestFrame = frame
-            onDisplayImage?(displayImage)
+            flushPendingFrame()
         }
     }
 
     nonisolated func sessionDidReceiveCursor(_ incoming: RDPCursor) {
+        let schedule = uiUpdateBuffer.enqueueCursor(incoming)
+        guard schedule else { return }
         Task { @MainActor in
-            var next = cursor
-            if incoming.updatesImageOnly {
-                if let image = incoming.image {
-                    next.image = image
-                    next.hotspot = incoming.hotspot
-                }
-            } else if shouldApplyServerCursorPosition(incoming) {
-                next.position = incoming.position
-                remotePointer = incoming.position
-            }
-            next.visible = incoming.visible
-            if next.image == nil && incoming.visible {
-                next = .defaultArrow(at: next.position)
-            }
-            cursor = next
-            onCursor?(next)
+            flushPendingCursor()
         }
+    }
+
+    @MainActor
+    private func flushPendingFrame() {
+        guard let frame = uiUpdateBuffer.takeFrame() else { return }
+        latestFrame = frame
+        desktopWidth = frame.width
+        desktopHeight = frame.height
+        presentThrottledFrame()
+    }
+
+    @MainActor
+    private func presentThrottledFrame() {
+        let now = CACurrentMediaTime()
+        if now - lastDisplayPresentTime >= minDisplayInterval {
+            lastDisplayPresentTime = now
+            pendingPresentScheduled = false
+            onDisplayImage?(displayImage(for: latestFrame))
+            return
+        }
+        guard !pendingPresentScheduled else { return }
+        pendingPresentScheduled = true
+        let delay = minDisplayInterval - (now - lastDisplayPresentTime)
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(max(delay, 0.001) * 1_000_000_000))
+            pendingPresentScheduled = false
+            presentThrottledFrame()
+        }
+    }
+
+    @MainActor
+    private func flushPendingCursor() {
+        guard let incoming = uiUpdateBuffer.takeCursor() else { return }
+
+        var next = cursor
+        if incoming.updatesImageOnly {
+            if let image = incoming.image {
+                next.image = image
+                next.hotspot = incoming.hotspot
+            }
+        } else if shouldApplyServerCursorPosition(incoming) {
+            next.position = incoming.position
+            remotePointer = incoming.position
+        }
+        next.visible = incoming.visible
+        if next.image == nil && incoming.visible {
+            next = .defaultArrow(at: next.position)
+        }
+        cursor = next
+        onCursor?(next)
     }
 
     nonisolated func sessionDidUpdateMetrics(rttMs: Double, lossPercent: Double, kbps: Int) {
@@ -352,5 +438,50 @@ extension RDPSessionController: RDPSessionDelegate {
             networkMonitor.report(rttMs: rttMs, lossPercent: lossPercent, kbps: kbps)
             applyAdaptiveColorModeIfNeeded()
         }
+    }
+}
+
+/// 线程安全的帧/光标合并缓冲：只保留最新一帧，避免主线程 Task 风暴
+private final class UIUpdateCoalesceBuffer: @unchecked Sendable {
+    private let lock = NSLock()
+    private var pendingFrame: RDPFrame?
+    private var frameFlushScheduled = false
+    private var pendingCursor: RDPCursor?
+    private var cursorFlushScheduled = false
+
+    func enqueueFrame(_ frame: RDPFrame) -> Bool {
+        lock.lock()
+        pendingFrame = frame
+        let schedule = !frameFlushScheduled
+        if schedule { frameFlushScheduled = true }
+        lock.unlock()
+        return schedule
+    }
+
+    func takeFrame() -> RDPFrame? {
+        lock.lock()
+        let frame = pendingFrame
+        pendingFrame = nil
+        frameFlushScheduled = false
+        lock.unlock()
+        return frame
+    }
+
+    func enqueueCursor(_ cursor: RDPCursor) -> Bool {
+        lock.lock()
+        pendingCursor = cursor
+        let schedule = !cursorFlushScheduled
+        if schedule { cursorFlushScheduled = true }
+        lock.unlock()
+        return schedule
+    }
+
+    func takeCursor() -> RDPCursor? {
+        lock.lock()
+        let cursor = pendingCursor
+        pendingCursor = nil
+        cursorFlushScheduled = false
+        lock.unlock()
+        return cursor
     }
 }

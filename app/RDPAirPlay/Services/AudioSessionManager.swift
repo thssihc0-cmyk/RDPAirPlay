@@ -9,6 +9,24 @@ final class AudioSessionManager: ObservableObject {
 
     private let session = AVAudioSession.sharedInstance()
 
+    /// 远程麦克风重定向前必须拿到系统授权，否则 FreeRDP audin-ios 无法打开 AudioQueue
+    func requestMicrophoneAccessIfNeeded() async -> Bool {
+        switch session.recordPermission {
+        case .granted:
+            return true
+        case .denied:
+            return false
+        case .undetermined:
+            return await withCheckedContinuation { continuation in
+                session.requestRecordPermission { granted in
+                    continuation.resume(returning: granted)
+                }
+            }
+        @unknown default:
+            return false
+        }
+    }
+
     func configureForRemoteDesktop(speaker: Bool, microphone: Bool) throws {
         isSpeakerEnabled = speaker
         isMicrophoneEnabled = microphone
@@ -18,14 +36,17 @@ final class AudioSessionManager: ObservableObject {
 
         if speaker && microphone {
             category = .playAndRecord
-            options = [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP]
+            options = [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP, .mixWithOthers]
         } else if microphone {
             category = .playAndRecord
-            options = [.allowBluetooth]
+            options = [.defaultToSpeaker, .allowBluetooth, .mixWithOthers]
         }
 
         try session.setCategory(category, mode: microphone ? .voiceChat : .default, options: options)
-        try session.setActive(true)
+        try session.setActive(true, options: [])
+        if microphone {
+            try session.setPreferredInputNumberOfChannels(1)
+        }
         updateRouteDescription()
     }
 

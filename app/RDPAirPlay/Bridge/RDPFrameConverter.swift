@@ -18,6 +18,20 @@ enum RDPFrameConverter {
         )
     }
 
+    /// 在 RDP 线程外解码：传入已从 GDI 缓冲区复制的像素
+    static func image(fromCopiedPixels data: Data, width: Int, height: Int, stride: Int) -> UIImage? {
+        data.withUnsafeBytes { raw in
+            guard let base = raw.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return nil }
+            return makeImage(
+                pixels: base,
+                width: width,
+                height: height,
+                stride: stride,
+                bitmapInfo: opaqueDesktopBitmapInfo
+            )
+        }
+    }
+
     static func cursorImage(from cursor: rdp_bridge_cursor) -> UIImage? {
         guard cursor.has_image != 0, cursor.width > 0, cursor.height > 0, cursor.pixels != nil else {
             return nil

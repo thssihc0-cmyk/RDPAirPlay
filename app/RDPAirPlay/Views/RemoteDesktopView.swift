@@ -73,7 +73,8 @@ final class RemoteDesktopCanvasView: UIView, UIGestureRecognizerDelegate {
 
     private weak var viewportPanRecognizer: UIPanGestureRecognizer?
     private weak var mousePanRecognizer: UIPanGestureRecognizer?
-    private weak var cursorMoveRecognizer: UILongPressGestureRecognizer?
+    private weak var cursorMoveRecognizer: UIPanGestureRecognizer?
+    private weak var twoFingerPanRecognizer: UIPanGestureRecognizer?
     private weak var twoFingerTapRecognizer: UITapGestureRecognizer?
 
     override init(frame: CGRect) {
@@ -127,7 +128,6 @@ final class RemoteDesktopCanvasView: UIView, UIGestureRecognizerDelegate {
     ) {
         currentCursor = cursor
         self.mouseMode = mouseMode
-        _ = viewportScale
         _ = viewportOffset
         _ = viewportFocalContent
         _ = viewportFocalScreen
@@ -142,8 +142,21 @@ final class RemoteDesktopCanvasView: UIView, UIGestureRecognizerDelegate {
             imageView.isHidden = true
             cursorView.isHidden = true
         }
+        applyPendingToolbarZoom()
         applyViewportTransform()
         layoutImageAndCursor()
+    }
+
+    private func applyPendingToolbarZoom() {
+        guard let controller, let target = controller.pendingZoomScale else { return }
+        let viewCenter = CGPoint(x: bounds.midX, y: bounds.midY)
+        let focal = cursorCenterInContentView() ?? viewCenter
+        let screen = contentToScreen(focal)
+        controller.viewportFocalContent = focal
+        controller.viewportFocalScreen = screen
+        controller.viewportOffset = .zero
+        controller.viewportScale = min(max(target, 1), 4)
+        controller.pendingZoomScale = nil
     }
 
     private func recalculateFitRect() {
@@ -296,9 +309,9 @@ final class RemoteDesktopCanvasView: UIView, UIGestureRecognizerDelegate {
         addGestureRecognizer(viewportPan)
         viewportPanRecognizer = viewportPan
 
-        let cursorMove = UILongPressGestureRecognizer(target: self, action: #selector(handleCursorMove(_:)))
-        cursorMove.minimumPressDuration = 0.12
-        cursorMove.allowableMovement = 10_000
+        let cursorMove = UIPanGestureRecognizer(target: self, action: #selector(handleCursorMove(_:)))
+        cursorMove.minimumNumberOfTouches = 1
+        cursorMove.maximumNumberOfTouches = 1
         cursorMove.delegate = self
         addGestureRecognizer(cursorMove)
         cursorMoveRecognizer = cursorMove
@@ -324,10 +337,12 @@ final class RemoteDesktopCanvasView: UIView, UIGestureRecognizerDelegate {
         addGestureRecognizer(twoFingerTap)
         twoFingerTapRecognizer = twoFingerTap
 
-        let scroll = UIPanGestureRecognizer(target: self, action: #selector(handleTwoFingerScroll(_:)))
-        scroll.minimumNumberOfTouches = 2
-        scroll.delegate = self
-        addGestureRecognizer(scroll)
+        let twoFingerPan = UIPanGestureRecognizer(target: self, action: #selector(handleTwoFingerPan(_:)))
+        twoFingerPan.minimumNumberOfTouches = 2
+        twoFingerPan.maximumNumberOfTouches = 2
+        twoFingerPan.delegate = self
+        addGestureRecognizer(twoFingerPan)
+        twoFingerPanRecognizer = twoFingerPan
 
         let mousePan = UIPanGestureRecognizer(target: self, action: #selector(handleMousePan(_:)))
         mousePan.minimumNumberOfTouches = 1
@@ -335,17 +350,17 @@ final class RemoteDesktopCanvasView: UIView, UIGestureRecognizerDelegate {
         mousePan.delegate = self
         addGestureRecognizer(mousePan)
         mousePanRecognizer = mousePan
-
-        tap.require(toFail: cursorMove)
-        longPress.require(toFail: cursorMove)
     }
 
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer === viewportPanRecognizer {
-            return canPanViewport && !pointerIsIndirect
+            return mouseMode == .directTouch && canPanViewport && !pointerIsIndirect
         }
         if gestureRecognizer === cursorMoveRecognizer {
-            return mouseMode == .mousePointer && !canPanViewport && !pointerIsIndirect
+            return mouseMode == .mousePointer && !pointerIsIndirect
+        }
+        if gestureRecognizer === twoFingerPanRecognizer {
+            return !pointerIsIndirect
         }
         if gestureRecognizer === mousePanRecognizer {
             return pointerIsIndirect
@@ -354,6 +369,16 @@ final class RemoteDesktopCanvasView: UIView, UIGestureRecognizerDelegate {
             return mouseMode == .mousePointer && !pointerIsIndirect
         }
         return true
+    }
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer is UIPinchGestureRecognizer, otherGestureRecognizer === twoFingerPanRecognizer {
+            return false
+        }
+        if otherGestureRecognizer is UIPinchGestureRecognizer, gestureRecognizer === twoFingerPanRecognizer {
+            return false
+        }
+        return false
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
@@ -440,15 +465,19 @@ final class RemoteDesktopCanvasView: UIView, UIGestureRecognizerDelegate {
         }
     }
 
-    @objc private func handleCursorMove(_ gesture: UILongPressGestureRecognizer) {
-        guard mouseMode == .mousePointer, !canPanViewport, !pointerIsIndirect else { return }
+    @objc private func handleCursorMove(_ gesture: UIPanGestureRecognizer) {
+        guard mouseMode == .mousePointer, !pointerIsIndirect else { return }
         let point = gesture.location(in: self)
         switch gesture.state {
         case .began:
             lastCursorDragPoint = point
             controller?.sendTrackpadMove(translation: .zero, padSize: fitRect.size, isPanning: true)
         case .changed:
-            let delta = CGPoint(x: point.x - lastCursorDragPoint.x, y: point.y - lastCursorDragPoint.y)
+            let viewScale = max(controller?.viewportScale ?? 1, 0.001)
+            let delta = CGPoint(
+                x: (point.x - lastCursorDragPoint.x) / viewScale,
+                y: (point.y - lastCursorDragPoint.y) / viewScale
+            )
             controller?.sendTrackpadMove(translation: delta, padSize: fitRect.size, isPanning: true)
             lastCursorDragPoint = point
         case .ended, .cancelled, .failed:
@@ -506,8 +535,31 @@ final class RemoteDesktopCanvasView: UIView, UIGestureRecognizerDelegate {
         controller?.sendClickAtCursor(button: .right)
     }
 
-    @objc private func handleTwoFingerScroll(_ gesture: UIPanGestureRecognizer) {
-        guard gesture.numberOfTouches >= 2, gesture.state == .changed || gesture.state == .ended else { return }
+    @objc private func handleTwoFingerPan(_ gesture: UIPanGestureRecognizer) {
+        guard !pointerIsIndirect else { return }
+        if canPanViewport {
+            guard let controller else { return }
+            switch gesture.state {
+            case .began:
+                panBaseOffset = controller.viewportOffset
+            case .changed:
+                let translation = gesture.translation(in: self)
+                controller.viewportOffset = clampedViewportOffset(
+                    CGSize(
+                        width: panBaseOffset.width + translation.x,
+                        height: panBaseOffset.height + translation.y
+                    ),
+                    scale: controller.viewportScale
+                )
+                applyViewportTransform()
+                layoutImageAndCursor()
+            default:
+                break
+            }
+            return
+        }
+
+        guard gesture.state == .changed || gesture.state == .ended else { return }
         let delta = Int(-gesture.translation(in: self).y / 8)
         guard delta != 0 else { return }
         switch mouseMode {

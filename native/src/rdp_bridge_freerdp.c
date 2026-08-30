@@ -12,6 +12,9 @@
 #include <freerdp/graphics.h>
 #include <freerdp/input.h>
 #include <freerdp/transport_io.h>
+#include <freerdp/client/channels.h>
+#include <freerdp/client/cmdline.h>
+#include <freerdp/channels/audin.h>
 #include <winpr/crt.h>
 #include <winpr/string.h>
 #include <winpr/handle.h>
@@ -456,6 +459,18 @@ static BOOL bridge_apply_settings(rdp_bridge_handle* handle, rdpSettings* settin
     if (!freerdp_settings_set_bool(settings, FreeRDP_AudioCapture, cfg->enable_microphone ? TRUE : FALSE))
         return FALSE;
 
+    /* rdpsnd/audin 与 Windows 音频设备枚举相关；播放或采集任一开启时需启用 */
+    if (cfg->enable_speaker || cfg->enable_microphone) {
+        if (!freerdp_settings_set_bool(settings, FreeRDP_DeviceRedirection, TRUE))
+            return FALSE;
+    }
+
+    if (cfg->enable_microphone) {
+        const char* audin_args[] = { AUDIN_CHANNEL_NAME, "ios" };
+        if (!freerdp_client_add_dynamic_channel(settings, ARRAYSIZE(audin_args), audin_args))
+            return FALSE;
+    }
+
     if (!freerdp_settings_set_bool(settings, FreeRDP_GrabKeyboard, FALSE))
         return FALSE;
     if (!freerdp_settings_set_bool(settings, FreeRDP_GrabMouse, FALSE))
@@ -692,6 +707,10 @@ static freerdp* bridge_create_instance(void) {
     return context->instance;
 }
 
+static void bridge_input_queue_init(rdp_bridge_input_queue* queue);
+static void bridge_input_queue_free(rdp_bridge_input_queue* queue);
+static void bridge_drain_input_queue(rdp_bridge_handle* handle);
+
 static void* bridge_thread_main(void* arg) {
     rdp_bridge_handle* handle = (rdp_bridge_handle*)arg;
     freerdp* instance = bridge_instance(handle);
@@ -725,7 +744,11 @@ static void* bridge_thread_main(void* arg) {
 
         if (!freerdp_check_event_handles(instance->context))
             break;
+
+        bridge_drain_input_queue(handle);
     }
+
+    bridge_drain_input_queue(handle);
 
     freerdp_disconnect(instance);
     handle->connected = 0;
@@ -742,6 +765,7 @@ int rdp_freerdp_connect_async(rdp_bridge_handle* handle) {
         handle->freerdp = calloc(1, sizeof(rdp_freerdp_context));
         if (!handle->freerdp)
             return -1;
+        bridge_input_queue_init(&handle->freerdp->input_queue);
     }
 
     if (handle->freerdp->running)
@@ -777,6 +801,10 @@ void rdp_freerdp_disconnect(rdp_bridge_handle* handle) {
 
     if (handle->freerdp->running)
         pthread_join(handle->freerdp->thread, NULL);
+
+    if (handle->freerdp) {
+        bridge_input_queue_free(&handle->freerdp->input_queue);
+    }
 
     if (handle->freerdp->instance) {
         freerdp* instance = bridge_instance(handle);
@@ -819,7 +847,109 @@ static rdpInput* bridge_input(rdp_bridge_handle* handle) {
     return instance->context->input;
 }
 
-void rdp_freerdp_send_mouse(rdp_bridge_handle* handle, int x, int y, int button, int action, int delta_x, int delta_y) {
+#define BRIDGE_INPUT_QUEUE_MAX 512
+
+static size_t bridge_input_queue_count(rdp_bridge_input_queue* queue) {
+    rdp_bridge_input_item* item;
+    size_t count = 0;
+
+    if (!queue)
+        return 0;
+
+    pthread_mutex_lock(&queue->mutex);
+    for (item = queue->head; item; item = item->next)
+        count++;
+    pthread_mutex_unlock(&queue->mutex);
+    return count;
+}
+
+static void bridge_input_queue_drop_oldest(rdp_bridge_input_queue* queue) {
+    rdp_bridge_input_item* item;
+    rdp_bridge_input_item* prev;
+
+    if (!queue)
+        return;
+
+    pthread_mutex_lock(&queue->mutex);
+    item = queue->head;
+    if (item) {
+        queue->head = item->next;
+        if (!queue->head)
+            queue->tail = NULL;
+    }
+    pthread_mutex_unlock(&queue->mutex);
+
+    if (!item)
+        return;
+    if (item->type == RDP_BRIDGE_INPUT_TEXT)
+        free(item->u.text);
+    free(item);
+}
+
+static void bridge_input_queue_init(rdp_bridge_input_queue* queue) {
+    if (!queue)
+        return;
+    queue->head = NULL;
+    queue->tail = NULL;
+    pthread_mutex_init(&queue->mutex, NULL);
+}
+
+static void bridge_input_queue_free(rdp_bridge_input_queue* queue) {
+    rdp_bridge_input_item* item;
+    rdp_bridge_input_item* next;
+
+    if (!queue)
+        return;
+
+    pthread_mutex_lock(&queue->mutex);
+    item = queue->head;
+    queue->head = NULL;
+    queue->tail = NULL;
+    pthread_mutex_unlock(&queue->mutex);
+
+    while (item) {
+        next = item->next;
+        if (item->type == RDP_BRIDGE_INPUT_TEXT)
+            free(item->u.text);
+        free(item);
+        item = next;
+    }
+
+    pthread_mutex_destroy(&queue->mutex);
+}
+
+static void bridge_input_queue_enqueue(rdp_bridge_input_queue* queue, rdp_bridge_input_item* item) {
+    if (!queue || !item)
+        return;
+
+    while (bridge_input_queue_count(queue) >= BRIDGE_INPUT_QUEUE_MAX)
+        bridge_input_queue_drop_oldest(queue);
+
+    item->next = NULL;
+    pthread_mutex_lock(&queue->mutex);
+    if (queue->tail)
+        queue->tail->next = item;
+    else
+        queue->head = item;
+    queue->tail = item;
+    pthread_mutex_unlock(&queue->mutex);
+}
+
+static rdp_bridge_input_item* bridge_input_queue_dequeue_all(rdp_bridge_input_queue* queue) {
+    rdp_bridge_input_item* items;
+
+    if (!queue)
+        return NULL;
+
+    pthread_mutex_lock(&queue->mutex);
+    items = queue->head;
+    queue->head = NULL;
+    queue->tail = NULL;
+    pthread_mutex_unlock(&queue->mutex);
+    return items;
+}
+
+static void bridge_send_mouse_impl(rdp_bridge_handle* handle, int x, int y, int button, int action, int delta_x, int delta_y) {
     rdpInput* input = bridge_input(handle);
     freerdp* instance = bridge_instance(handle);
     bridge_rdp_context* ctx = instance ? (bridge_rdp_context*)instance->context : NULL;
@@ -858,7 +988,7 @@ void rdp_freerdp_send_mouse(rdp_bridge_handle* handle, int x, int y, int button,
     freerdp_input_send_mouse_event(input, flags, (UINT16)x, (UINT16)y);
 }
 
-void rdp_freerdp_send_key(rdp_bridge_handle* handle, uint16_t key_code, int action, uint8_t modifiers) {
+static void bridge_send_key_impl(rdp_bridge_handle* handle, uint16_t key_code, int action, uint8_t modifiers) {
     rdpInput* input = bridge_input(handle);
     BOOL down;
 
@@ -870,7 +1000,7 @@ void rdp_freerdp_send_key(rdp_bridge_handle* handle, uint16_t key_code, int acti
     freerdp_input_send_keyboard_event_ex(input, down, FALSE, (UINT32)key_code);
 }
 
-void rdp_freerdp_send_text(rdp_bridge_handle* handle, const char* text) {
+static void bridge_send_text_impl(rdp_bridge_handle* handle, const char* text) {
     rdpInput* input = bridge_input(handle);
     WCHAR* wide = NULL;
     size_t length = 0;
@@ -886,8 +1016,99 @@ void rdp_freerdp_send_text(rdp_bridge_handle* handle, const char* text) {
         if (wide[i] == 0)
             continue;
         freerdp_input_send_unicode_keyboard_event(input, 0, (UINT16)wide[i]);
+        freerdp_input_send_unicode_keyboard_event(input, KBD_FLAGS_RELEASE, (UINT16)wide[i]);
     }
     free(wide);
+}
+
+static void bridge_drain_input_queue(rdp_bridge_handle* handle) {
+    rdp_bridge_input_item* items;
+    rdp_bridge_input_item* item;
+    rdp_bridge_input_item* next;
+
+    if (!handle || !handle->freerdp)
+        return;
+
+    items = bridge_input_queue_dequeue_all(&handle->freerdp->input_queue);
+    for (item = items; item; item = next) {
+        next = item->next;
+        switch (item->type) {
+        case RDP_BRIDGE_INPUT_MOUSE:
+            bridge_send_mouse_impl(handle, item->u.mouse.x, item->u.mouse.y, item->u.mouse.button,
+                                   item->u.mouse.action, item->u.mouse.delta_x, item->u.mouse.delta_y);
+            break;
+        case RDP_BRIDGE_INPUT_KEY:
+            bridge_send_key_impl(handle, item->u.key.key_code, item->u.key.action, item->u.key.modifiers);
+            break;
+        case RDP_BRIDGE_INPUT_TEXT:
+            if (item->u.text)
+                bridge_send_text_impl(handle, item->u.text);
+            free(item->u.text);
+            break;
+        default:
+            break;
+        }
+        free(item);
+    }
+}
+
+void rdp_freerdp_send_mouse(rdp_bridge_handle* handle, int x, int y, int button, int action, int delta_x, int delta_y) {
+    rdp_bridge_input_item* item;
+
+    if (!handle || !handle->freerdp)
+        return;
+
+    item = (rdp_bridge_input_item*)calloc(1, sizeof(rdp_bridge_input_item));
+    if (!item)
+        return;
+
+    item->type = RDP_BRIDGE_INPUT_MOUSE;
+    item->u.mouse.x = x;
+    item->u.mouse.y = y;
+    item->u.mouse.button = button;
+    item->u.mouse.action = action;
+    item->u.mouse.delta_x = delta_x;
+    item->u.mouse.delta_y = delta_y;
+    bridge_input_queue_enqueue(&handle->freerdp->input_queue, item);
+}
+
+void rdp_freerdp_send_key(rdp_bridge_handle* handle, uint16_t key_code, int action, uint8_t modifiers) {
+    rdp_bridge_input_item* item;
+
+    if (!handle || !handle->freerdp)
+        return;
+
+    item = (rdp_bridge_input_item*)calloc(1, sizeof(rdp_bridge_input_item));
+    if (!item)
+        return;
+
+    item->type = RDP_BRIDGE_INPUT_KEY;
+    item->u.key.key_code = key_code;
+    item->u.key.action = action;
+    item->u.key.modifiers = modifiers;
+    bridge_input_queue_enqueue(&handle->freerdp->input_queue, item);
+}
+
+void rdp_freerdp_send_text(rdp_bridge_handle* handle, const char* text) {
+    rdp_bridge_input_item* item;
+    char* copy;
+
+    if (!handle || !handle->freerdp || !text || text[0] == '\0')
+        return;
+
+    copy = bridge_strdup(text);
+    if (!copy)
+        return;
+
+    item = (rdp_bridge_input_item*)calloc(1, sizeof(rdp_bridge_input_item));
+    if (!item) {
+        free(copy);
+        return;
+    }
+
+    item->type = RDP_BRIDGE_INPUT_TEXT;
+    item->u.text = copy;
+    bridge_input_queue_enqueue(&handle->freerdp->input_queue, item);
 }
 
 void rdp_freerdp_send_capture_audio(rdp_bridge_handle* handle, const int16_t* samples, int sample_count, int sample_rate, int channels) {
