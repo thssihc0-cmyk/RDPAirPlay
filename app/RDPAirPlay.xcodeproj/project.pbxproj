@@ -1,0 +1,502 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		004538C1FD7745678F2A895B /* RDPAirPlay/Session/RDPSessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C8F9B1C80E4CD496137718 /* RDPAirPlay/Session/RDPSessionController.swift */; };
+		075893CE60D6495D822ABF07 /* RDPAirPlay/Views/HostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D83FD77FC2D4B5C872A0F56 /* RDPAirPlay/Views/HostListView.swift */; };
+		0803925A021447B7933CBA3B /* RDPAirPlay/Models/ColorMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF9A89364E742CFB665BFE2 /* RDPAirPlay/Models/ColorMode.swift */; };
+		0E52C4879A2F4518AFB530D3 /* RDPAirPlay/Services/RDPErrorFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F79C6A4D8A4A32A5BF5B28 /* RDPAirPlay/Services/RDPErrorFormatter.swift */; };
+		1A06A178AE5D46269BCC3708 /* RDPAirPlay/Models/HostProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFA50A9206C42B49E400AE9 /* RDPAirPlay/Models/HostProfile.swift */; };
+		1ACD15B2ACFF4C4BA777BDE2 /* RDPAirPlay/Views/Components/ModifierKeyBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F54BD51E7214707A108566D /* RDPAirPlay/Views/Components/ModifierKeyBar.swift */; };
+		1BDAED0187154F94B92BC1B4 /* RDPAirPlay/Views/SessionConnectionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20DB70DC956E4C988F2DF64D /* RDPAirPlay/Views/SessionConnectionBar.swift */; };
+		1DE61D3B82244DC8B2A5DF75 /* RDPAirPlay/Services/SessionOrientationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359BDAEA62F04E02A73A2C58 /* RDPAirPlay/Services/SessionOrientationManager.swift */; };
+		1EE51B1505F74DC0B6759043 /* RDPAirPlay/Session/StubRDPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C394D7AAF0F438583EA2B90 /* RDPAirPlay/Session/StubRDPSession.swift */; };
+		203910B8A2F44CE194DD8A6F /* RDPAirPlay/Views/SessionToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19846D85E83E42D496386DCD /* RDPAirPlay/Views/SessionToolbar.swift */; };
+		23F70786981A49AE8B1BC0B1 /* RDPAirPlay/App/AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FC988C6F8EC4A35A15751C4 /* RDPAirPlay/App/AppDelegate.swift */; };
+		269D85A20F9042F08635F094 /* RDPAirPlay/Services/ColorModeProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C74CC5B12214A60A5CCBF93 /* RDPAirPlay/Services/ColorModeProcessor.swift */; };
+		399A287A6D624A6A972F951C /* RDPAirPlay/Session/RDPScanCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F74032BCB8748DC85483D52 /* RDPAirPlay/Session/RDPScanCode.swift */; };
+		3D00B3CA05DB45D69C7281F2 /* RDPAirPlay/Views/Components/OnScreenKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0C73E253D44F039C048E91 /* RDPAirPlay/Views/Components/OnScreenKeyboardView.swift */; };
+		423C0D7F6DDD4FC59C0B3993 /* RDPAirPlay/Models/ResolutionPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A23E78A5E7482090B46B80 /* RDPAirPlay/Models/ResolutionPreset.swift */; };
+		42A04431B1BA4B79B81940BA /* RDPAirPlay/Input/HardwareKeyboardHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = A290257B077A45E3925179BF /* RDPAirPlay/Input/HardwareKeyboardHost.swift */; };
+		44BF1B0FCC6F4CCFA7039159 /* RDPAirPlay/Views/Components/SessionExternalDisplayHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE1AC207FE0544FA866EB09C /* RDPAirPlay/Views/Components/SessionExternalDisplayHost.swift */; };
+		451FC3DCD00C4620BB62DE75 /* RDPAirPlay/Session/NetworkQualityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6DF3C3D2804005BD4CE5A5 /* RDPAirPlay/Session/NetworkQualityMonitor.swift */; };
+		4E525396CA69478B980A2493 /* ../native/src/rdp_bridge.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C3CE787D993468D95F8E95D /* ../native/src/rdp_bridge.c */; };
+		4F523582E47D45DE9A70A616 /* RDPAirPlay/Input/MouseInputHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09C02F5E43E418B986980E1 /* RDPAirPlay/Input/MouseInputHandler.swift */; };
+		50556A742F6B479EB6518D1D /* RDPAirPlay/Services/HostStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33E4BBE6A24A4C10B368EF35 /* RDPAirPlay/Services/HostStore.swift */; };
+		51BD036F04144345A9244502 /* RDPAirPlay/Views/Components/RemoteKeyboardHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86A10DFA25B4F26BD6AB1BD /* RDPAirPlay/Views/Components/RemoteKeyboardHost.swift */; };
+		662A4BD16AF047FD910973F2 /* RDPAirPlay/Views/Components/WindowsAuxiliaryKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7CFCAD9E3A4AF8943BF20A /* RDPAirPlay/Views/Components/WindowsAuxiliaryKeyboardView.swift */; };
+		6827EBE446B94D8C9E5DB588 /* RDPAirPlay/Services/ExternalDisplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EE556459A84296A657650B /* RDPAirPlay/Services/ExternalDisplayManager.swift */; };
+		6B5A8981FE6940699E837585 /* RDPAirPlay/Views/Components/WindowsRemoteKeyboardPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E387FB88F480473BADA2146F /* RDPAirPlay/Views/Components/WindowsRemoteKeyboardPanel.swift */; };
+		76C55B6AAEC543828A283E06 /* RDPAirPlay/App/ExternalDisplaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE54064807EF444F98D44BD0 /* RDPAirPlay/App/ExternalDisplaySceneDelegate.swift */; };
+		845566B883284C1F841B6549 /* RDPAirPlay/Services/KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7D605EF83C4192B86F85CB /* RDPAirPlay/Services/KeychainService.swift */; };
+		84678F5B63E8429E9BA0C5C6 /* RDPAirPlay/Views/Components/FunctionKeyPad.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AD37FD537A467298873122 /* RDPAirPlay/Views/Components/FunctionKeyPad.swift */; };
+		86DDFC440F7B4AA38EED0A78 /* RDPAirPlay/Bridge/RDPBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14ADB68A3BB242398163CB89 /* RDPAirPlay/Bridge/RDPBridge.swift */; };
+		A47EEF65A1484479AC6354B6 /* RDPAirPlay/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A002BDFED574A95A298B91A /* RDPAirPlay/Assets.xcassets */; };
+		BE7A91993C614693BEA7EB7C /* RDPAirPlay/RDPAirPlayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4341ACAC9D3B41169442EA98 /* RDPAirPlay/RDPAirPlayApp.swift */; };
+		C0737B6DB3324C7F9A0F5A30 /* RDPAirPlay/Views/SessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BE8C51CB1F4372A7DA4D1C /* RDPAirPlay/Views/SessionView.swift */; };
+		C2ED51E358744839A7F4040B /* RDPAirPlay/Session/RDPSessionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F2B4D06C5B42F7BB784682 /* RDPAirPlay/Session/RDPSessionProtocol.swift */; };
+		C7B99C18A1C64834A54D5EDC /* RDPAirPlay/Input/HardwareKeyboardMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4280DC14AD72440B9B2279E8 /* RDPAirPlay/Input/HardwareKeyboardMapper.swift */; };
+		CC05C9E180C742759BA009DA /* RDPAirPlay/Models/RDPConnectionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E69D4B67FA74BE68744C66C /* RDPAirPlay/Models/RDPConnectionError.swift */; };
+		CD1C261EE7B24024875E5328 /* RDPAirPlay/Views/TouchpadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E25D4A5681C45079B5ED26F /* RDPAirPlay/Views/TouchpadView.swift */; };
+		CDEB9A15556D4AA0A23FFEBC /* RDPAirPlay/Services/AudioSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC14291581A4C3583557AD0 /* RDPAirPlay/Services/AudioSessionManager.swift */; };
+		D5076679372C476A9262125A /* ../native/src/rdp_bridge_freerdp.c in Sources */ = {isa = PBXBuildFile; fileRef = EAA589B69A754B3C90889706 /* ../native/src/rdp_bridge_freerdp.c */; };
+		DB032D6305F04B73A714086E /* RDPAirPlay/Views/HostEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CDE7B55B064C2E9323967A /* RDPAirPlay/Views/HostEditorView.swift */; };
+		DCC1A61FFBBF4658A1817B5F /* RDPAirPlay/Models/SessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 916DC08B14194BA8ABC6356C /* RDPAirPlay/Models/SessionState.swift */; };
+		E25C4D2F62C14A369A79BB26 /* RDPAirPlay/Session/RemoteMouseMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B744E3902C141CB8CC37DA2 /* RDPAirPlay/Session/RemoteMouseMode.swift */; };
+		E8B5BCE28AC14FF9B52C481E /* RDPAirPlay/Views/RemoteDesktopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300292D6A6C940D7A61E887D /* RDPAirPlay/Views/RemoteDesktopView.swift */; };
+		EA19D6044A4446C9A186422B /* RDPAirPlay/Views/ExternalDesktopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF9F2C797464FC58665729E /* RDPAirPlay/Views/ExternalDesktopView.swift */; };
+		F6C34FE2CF864194B637D6BB /* RDPAirPlay/Bridge/RDPFrameConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC64A4D15F074510B87F2790 /* RDPAirPlay/Bridge/RDPFrameConverter.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		03C8F9B1C80E4CD496137718 /* RDPAirPlay/Session/RDPSessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Session/RDPSessionController.swift; sourceTree = SOURCE_ROOT; };
+		0A7CFCAD9E3A4AF8943BF20A /* RDPAirPlay/Views/Components/WindowsAuxiliaryKeyboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/Components/WindowsAuxiliaryKeyboardView.swift; sourceTree = SOURCE_ROOT; };
+		14ADB68A3BB242398163CB89 /* RDPAirPlay/Bridge/RDPBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Bridge/RDPBridge.swift; sourceTree = SOURCE_ROOT; };
+		19846D85E83E42D496386DCD /* RDPAirPlay/Views/SessionToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/SessionToolbar.swift; sourceTree = SOURCE_ROOT; };
+		1B744E3902C141CB8CC37DA2 /* RDPAirPlay/Session/RemoteMouseMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Session/RemoteMouseMode.swift; sourceTree = SOURCE_ROOT; };
+		1C3CE787D993468D95F8E95D /* ../native/src/rdp_bridge.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ../native/src/rdp_bridge.c; sourceTree = SOURCE_ROOT; };
+		20DB70DC956E4C988F2DF64D /* RDPAirPlay/Views/SessionConnectionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/SessionConnectionBar.swift; sourceTree = SOURCE_ROOT; };
+		2717D495FAE140C19A351521 /* RDPAirPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RDPAirPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C394D7AAF0F438583EA2B90 /* RDPAirPlay/Session/StubRDPSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Session/StubRDPSession.swift; sourceTree = SOURCE_ROOT; };
+		300292D6A6C940D7A61E887D /* RDPAirPlay/Views/RemoteDesktopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/RemoteDesktopView.swift; sourceTree = SOURCE_ROOT; };
+		33E4BBE6A24A4C10B368EF35 /* RDPAirPlay/Services/HostStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Services/HostStore.swift; sourceTree = SOURCE_ROOT; };
+		359BDAEA62F04E02A73A2C58 /* RDPAirPlay/Services/SessionOrientationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Services/SessionOrientationManager.swift; sourceTree = SOURCE_ROOT; };
+		3CFA50A9206C42B49E400AE9 /* RDPAirPlay/Models/HostProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Models/HostProfile.swift; sourceTree = SOURCE_ROOT; };
+		4280DC14AD72440B9B2279E8 /* RDPAirPlay/Input/HardwareKeyboardMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Input/HardwareKeyboardMapper.swift; sourceTree = SOURCE_ROOT; };
+		4341ACAC9D3B41169442EA98 /* RDPAirPlay/RDPAirPlayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/RDPAirPlayApp.swift; sourceTree = SOURCE_ROOT; };
+		4B7D605EF83C4192B86F85CB /* RDPAirPlay/Services/KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Services/KeychainService.swift; sourceTree = SOURCE_ROOT; };
+		4E25D4A5681C45079B5ED26F /* RDPAirPlay/Views/TouchpadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/TouchpadView.swift; sourceTree = SOURCE_ROOT; };
+		4F54BD51E7214707A108566D /* RDPAirPlay/Views/Components/ModifierKeyBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/Components/ModifierKeyBar.swift; sourceTree = SOURCE_ROOT; };
+		4F74032BCB8748DC85483D52 /* RDPAirPlay/Session/RDPScanCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Session/RDPScanCode.swift; sourceTree = SOURCE_ROOT; };
+		50CDE7B55B064C2E9323967A /* RDPAirPlay/Views/HostEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/HostEditorView.swift; sourceTree = SOURCE_ROOT; };
+		68BE8C51CB1F4372A7DA4D1C /* RDPAirPlay/Views/SessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/SessionView.swift; sourceTree = SOURCE_ROOT; };
+		6CC14291581A4C3583557AD0 /* RDPAirPlay/Services/AudioSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Services/AudioSessionManager.swift; sourceTree = SOURCE_ROOT; };
+		6E69D4B67FA74BE68744C66C /* RDPAirPlay/Models/RDPConnectionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Models/RDPConnectionError.swift; sourceTree = SOURCE_ROOT; };
+		6FC988C6F8EC4A35A15751C4 /* RDPAirPlay/App/AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/App/AppDelegate.swift; sourceTree = SOURCE_ROOT; };
+		88F79C6A4D8A4A32A5BF5B28 /* RDPAirPlay/Services/RDPErrorFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Services/RDPErrorFormatter.swift; sourceTree = SOURCE_ROOT; };
+		8C74CC5B12214A60A5CCBF93 /* RDPAirPlay/Services/ColorModeProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Services/ColorModeProcessor.swift; sourceTree = SOURCE_ROOT; };
+		916DC08B14194BA8ABC6356C /* RDPAirPlay/Models/SessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Models/SessionState.swift; sourceTree = SOURCE_ROOT; };
+		9A002BDFED574A95A298B91A /* RDPAirPlay/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = RDPAirPlay/Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		9A0C73E253D44F039C048E91 /* RDPAirPlay/Views/Components/OnScreenKeyboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/Components/OnScreenKeyboardView.swift; sourceTree = SOURCE_ROOT; };
+		9D83FD77FC2D4B5C872A0F56 /* RDPAirPlay/Views/HostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/HostListView.swift; sourceTree = SOURCE_ROOT; };
+		A290257B077A45E3925179BF /* RDPAirPlay/Input/HardwareKeyboardHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Input/HardwareKeyboardHost.swift; sourceTree = SOURCE_ROOT; };
+		A3F2B4D06C5B42F7BB784682 /* RDPAirPlay/Session/RDPSessionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Session/RDPSessionProtocol.swift; sourceTree = SOURCE_ROOT; };
+		A5EE556459A84296A657650B /* RDPAirPlay/Services/ExternalDisplayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Services/ExternalDisplayManager.swift; sourceTree = SOURCE_ROOT; };
+		AFF9A89364E742CFB665BFE2 /* RDPAirPlay/Models/ColorMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Models/ColorMode.swift; sourceTree = SOURCE_ROOT; };
+		BF6DF3C3D2804005BD4CE5A5 /* RDPAirPlay/Session/NetworkQualityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Session/NetworkQualityMonitor.swift; sourceTree = SOURCE_ROOT; };
+		CFF9F2C797464FC58665729E /* RDPAirPlay/Views/ExternalDesktopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/ExternalDesktopView.swift; sourceTree = SOURCE_ROOT; };
+		D5AD37FD537A467298873122 /* RDPAirPlay/Views/Components/FunctionKeyPad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/Components/FunctionKeyPad.swift; sourceTree = SOURCE_ROOT; };
+		D86A10DFA25B4F26BD6AB1BD /* RDPAirPlay/Views/Components/RemoteKeyboardHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/Components/RemoteKeyboardHost.swift; sourceTree = SOURCE_ROOT; };
+		DE54064807EF444F98D44BD0 /* RDPAirPlay/App/ExternalDisplaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/App/ExternalDisplaySceneDelegate.swift; sourceTree = SOURCE_ROOT; };
+		E387FB88F480473BADA2146F /* RDPAirPlay/Views/Components/WindowsRemoteKeyboardPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/Components/WindowsRemoteKeyboardPanel.swift; sourceTree = SOURCE_ROOT; };
+		EAA589B69A754B3C90889706 /* ../native/src/rdp_bridge_freerdp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ../native/src/rdp_bridge_freerdp.c; sourceTree = SOURCE_ROOT; };
+		F09C02F5E43E418B986980E1 /* RDPAirPlay/Input/MouseInputHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Input/MouseInputHandler.swift; sourceTree = SOURCE_ROOT; };
+		F1A23E78A5E7482090B46B80 /* RDPAirPlay/Models/ResolutionPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Models/ResolutionPreset.swift; sourceTree = SOURCE_ROOT; };
+		FC64A4D15F074510B87F2790 /* RDPAirPlay/Bridge/RDPFrameConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Bridge/RDPFrameConverter.swift; sourceTree = SOURCE_ROOT; };
+		FE1AC207FE0544FA866EB09C /* RDPAirPlay/Views/Components/SessionExternalDisplayHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPAirPlay/Views/Components/SessionExternalDisplayHost.swift; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2E0DC32D38AA41E49CFB14A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4E35440D5BA144CBB875365F = {
+			isa = PBXGroup;
+			children = (
+				7AA7653534134F11BB59B43F /* RDPAirPlay */,
+				97B0B22D4B314C1C9F265713 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7AA7653534134F11BB59B43F /* RDPAirPlay */ = {
+			isa = PBXGroup;
+			children = (
+				9A002BDFED574A95A298B91A /* RDPAirPlay/Assets.xcassets */,
+				4341ACAC9D3B41169442EA98 /* RDPAirPlay/RDPAirPlayApp.swift */,
+				6FC988C6F8EC4A35A15751C4 /* RDPAirPlay/App/AppDelegate.swift */,
+				DE54064807EF444F98D44BD0 /* RDPAirPlay/App/ExternalDisplaySceneDelegate.swift */,
+				A290257B077A45E3925179BF /* RDPAirPlay/Input/HardwareKeyboardHost.swift */,
+				4280DC14AD72440B9B2279E8 /* RDPAirPlay/Input/HardwareKeyboardMapper.swift */,
+				F09C02F5E43E418B986980E1 /* RDPAirPlay/Input/MouseInputHandler.swift */,
+				14ADB68A3BB242398163CB89 /* RDPAirPlay/Bridge/RDPBridge.swift */,
+				FC64A4D15F074510B87F2790 /* RDPAirPlay/Bridge/RDPFrameConverter.swift */,
+				AFF9A89364E742CFB665BFE2 /* RDPAirPlay/Models/ColorMode.swift */,
+				3CFA50A9206C42B49E400AE9 /* RDPAirPlay/Models/HostProfile.swift */,
+				6E69D4B67FA74BE68744C66C /* RDPAirPlay/Models/RDPConnectionError.swift */,
+				F1A23E78A5E7482090B46B80 /* RDPAirPlay/Models/ResolutionPreset.swift */,
+				916DC08B14194BA8ABC6356C /* RDPAirPlay/Models/SessionState.swift */,
+				CFF9F2C797464FC58665729E /* RDPAirPlay/Views/ExternalDesktopView.swift */,
+				50CDE7B55B064C2E9323967A /* RDPAirPlay/Views/HostEditorView.swift */,
+				9D83FD77FC2D4B5C872A0F56 /* RDPAirPlay/Views/HostListView.swift */,
+				300292D6A6C940D7A61E887D /* RDPAirPlay/Views/RemoteDesktopView.swift */,
+				20DB70DC956E4C988F2DF64D /* RDPAirPlay/Views/SessionConnectionBar.swift */,
+				19846D85E83E42D496386DCD /* RDPAirPlay/Views/SessionToolbar.swift */,
+				68BE8C51CB1F4372A7DA4D1C /* RDPAirPlay/Views/SessionView.swift */,
+				4E25D4A5681C45079B5ED26F /* RDPAirPlay/Views/TouchpadView.swift */,
+				D5AD37FD537A467298873122 /* RDPAirPlay/Views/Components/FunctionKeyPad.swift */,
+				4F54BD51E7214707A108566D /* RDPAirPlay/Views/Components/ModifierKeyBar.swift */,
+				9A0C73E253D44F039C048E91 /* RDPAirPlay/Views/Components/OnScreenKeyboardView.swift */,
+				D86A10DFA25B4F26BD6AB1BD /* RDPAirPlay/Views/Components/RemoteKeyboardHost.swift */,
+				FE1AC207FE0544FA866EB09C /* RDPAirPlay/Views/Components/SessionExternalDisplayHost.swift */,
+				0A7CFCAD9E3A4AF8943BF20A /* RDPAirPlay/Views/Components/WindowsAuxiliaryKeyboardView.swift */,
+				E387FB88F480473BADA2146F /* RDPAirPlay/Views/Components/WindowsRemoteKeyboardPanel.swift */,
+				6CC14291581A4C3583557AD0 /* RDPAirPlay/Services/AudioSessionManager.swift */,
+				8C74CC5B12214A60A5CCBF93 /* RDPAirPlay/Services/ColorModeProcessor.swift */,
+				A5EE556459A84296A657650B /* RDPAirPlay/Services/ExternalDisplayManager.swift */,
+				33E4BBE6A24A4C10B368EF35 /* RDPAirPlay/Services/HostStore.swift */,
+				4B7D605EF83C4192B86F85CB /* RDPAirPlay/Services/KeychainService.swift */,
+				88F79C6A4D8A4A32A5BF5B28 /* RDPAirPlay/Services/RDPErrorFormatter.swift */,
+				359BDAEA62F04E02A73A2C58 /* RDPAirPlay/Services/SessionOrientationManager.swift */,
+				BF6DF3C3D2804005BD4CE5A5 /* RDPAirPlay/Session/NetworkQualityMonitor.swift */,
+				4F74032BCB8748DC85483D52 /* RDPAirPlay/Session/RDPScanCode.swift */,
+				03C8F9B1C80E4CD496137718 /* RDPAirPlay/Session/RDPSessionController.swift */,
+				A3F2B4D06C5B42F7BB784682 /* RDPAirPlay/Session/RDPSessionProtocol.swift */,
+				1B744E3902C141CB8CC37DA2 /* RDPAirPlay/Session/RemoteMouseMode.swift */,
+				2C394D7AAF0F438583EA2B90 /* RDPAirPlay/Session/StubRDPSession.swift */,
+				1C3CE787D993468D95F8E95D /* ../native/src/rdp_bridge.c */,
+				EAA589B69A754B3C90889706 /* ../native/src/rdp_bridge_freerdp.c */,
+			);
+			name = RDPAirPlay;
+			sourceTree = "<group>";
+		};
+		97B0B22D4B314C1C9F265713 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2717D495FAE140C19A351521 /* RDPAirPlay.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5264606610274C2083D2A102 /* RDPAirPlay */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F1EB27589AD7419E9E6F5B92 /* Build configuration list for PBXNativeTarget "RDPAirPlay" */;
+			buildPhases = (
+				99C2739A5CD344549F1250BE /* Sources */,
+				2E0DC32D38AA41E49CFB14A8 /* Frameworks */,
+				EE3D6F3A0F234572B79A7BA1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RDPAirPlay;
+			productName = RDPAirPlay;
+			productReference = 2717D495FAE140C19A351521 /* RDPAirPlay.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B151346CAC2648E29DF6F1E9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+			};
+			buildConfigurationList = B160184D231A433CBE720929 /* Build configuration list for PBXProject "RDPAirPlay" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = "zh-Hans";
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-Hans",
+			);
+			mainGroup = 4E35440D5BA144CBB875365F;
+			productRefGroup = 97B0B22D4B314C1C9F265713 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5264606610274C2083D2A102 /* RDPAirPlay */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EE3D6F3A0F234572B79A7BA1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A47EEF65A1484479AC6354B6 /* RDPAirPlay/Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		99C2739A5CD344549F1250BE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE7A91993C614693BEA7EB7C /* RDPAirPlay/RDPAirPlayApp.swift in Sources */,
+				23F70786981A49AE8B1BC0B1 /* RDPAirPlay/App/AppDelegate.swift in Sources */,
+				76C55B6AAEC543828A283E06 /* RDPAirPlay/App/ExternalDisplaySceneDelegate.swift in Sources */,
+				42A04431B1BA4B79B81940BA /* RDPAirPlay/Input/HardwareKeyboardHost.swift in Sources */,
+				C7B99C18A1C64834A54D5EDC /* RDPAirPlay/Input/HardwareKeyboardMapper.swift in Sources */,
+				4F523582E47D45DE9A70A616 /* RDPAirPlay/Input/MouseInputHandler.swift in Sources */,
+				86DDFC440F7B4AA38EED0A78 /* RDPAirPlay/Bridge/RDPBridge.swift in Sources */,
+				F6C34FE2CF864194B637D6BB /* RDPAirPlay/Bridge/RDPFrameConverter.swift in Sources */,
+				0803925A021447B7933CBA3B /* RDPAirPlay/Models/ColorMode.swift in Sources */,
+				1A06A178AE5D46269BCC3708 /* RDPAirPlay/Models/HostProfile.swift in Sources */,
+				CC05C9E180C742759BA009DA /* RDPAirPlay/Models/RDPConnectionError.swift in Sources */,
+				423C0D7F6DDD4FC59C0B3993 /* RDPAirPlay/Models/ResolutionPreset.swift in Sources */,
+				DCC1A61FFBBF4658A1817B5F /* RDPAirPlay/Models/SessionState.swift in Sources */,
+				EA19D6044A4446C9A186422B /* RDPAirPlay/Views/ExternalDesktopView.swift in Sources */,
+				DB032D6305F04B73A714086E /* RDPAirPlay/Views/HostEditorView.swift in Sources */,
+				075893CE60D6495D822ABF07 /* RDPAirPlay/Views/HostListView.swift in Sources */,
+				E8B5BCE28AC14FF9B52C481E /* RDPAirPlay/Views/RemoteDesktopView.swift in Sources */,
+				1BDAED0187154F94B92BC1B4 /* RDPAirPlay/Views/SessionConnectionBar.swift in Sources */,
+				203910B8A2F44CE194DD8A6F /* RDPAirPlay/Views/SessionToolbar.swift in Sources */,
+				C0737B6DB3324C7F9A0F5A30 /* RDPAirPlay/Views/SessionView.swift in Sources */,
+				CD1C261EE7B24024875E5328 /* RDPAirPlay/Views/TouchpadView.swift in Sources */,
+				84678F5B63E8429E9BA0C5C6 /* RDPAirPlay/Views/Components/FunctionKeyPad.swift in Sources */,
+				1ACD15B2ACFF4C4BA777BDE2 /* RDPAirPlay/Views/Components/ModifierKeyBar.swift in Sources */,
+				3D00B3CA05DB45D69C7281F2 /* RDPAirPlay/Views/Components/OnScreenKeyboardView.swift in Sources */,
+				51BD036F04144345A9244502 /* RDPAirPlay/Views/Components/RemoteKeyboardHost.swift in Sources */,
+				44BF1B0FCC6F4CCFA7039159 /* RDPAirPlay/Views/Components/SessionExternalDisplayHost.swift in Sources */,
+				662A4BD16AF047FD910973F2 /* RDPAirPlay/Views/Components/WindowsAuxiliaryKeyboardView.swift in Sources */,
+				6B5A8981FE6940699E837585 /* RDPAirPlay/Views/Components/WindowsRemoteKeyboardPanel.swift in Sources */,
+				CDEB9A15556D4AA0A23FFEBC /* RDPAirPlay/Services/AudioSessionManager.swift in Sources */,
+				269D85A20F9042F08635F094 /* RDPAirPlay/Services/ColorModeProcessor.swift in Sources */,
+				6827EBE446B94D8C9E5DB588 /* RDPAirPlay/Services/ExternalDisplayManager.swift in Sources */,
+				50556A742F6B479EB6518D1D /* RDPAirPlay/Services/HostStore.swift in Sources */,
+				845566B883284C1F841B6549 /* RDPAirPlay/Services/KeychainService.swift in Sources */,
+				0E52C4879A2F4518AFB530D3 /* RDPAirPlay/Services/RDPErrorFormatter.swift in Sources */,
+				1DE61D3B82244DC8B2A5DF75 /* RDPAirPlay/Services/SessionOrientationManager.swift in Sources */,
+				451FC3DCD00C4620BB62DE75 /* RDPAirPlay/Session/NetworkQualityMonitor.swift in Sources */,
+				399A287A6D624A6A972F951C /* RDPAirPlay/Session/RDPScanCode.swift in Sources */,
+				004538C1FD7745678F2A895B /* RDPAirPlay/Session/RDPSessionController.swift in Sources */,
+				C2ED51E358744839A7F4040B /* RDPAirPlay/Session/RDPSessionProtocol.swift in Sources */,
+				E25C4D2F62C14A369A79BB26 /* RDPAirPlay/Session/RemoteMouseMode.swift in Sources */,
+				1EE51B1505F74DC0B6759043 /* RDPAirPlay/Session/StubRDPSession.swift in Sources */,
+				4E525396CA69478B980A2493 /* ../native/src/rdp_bridge.c in Sources */,
+				D5076679372C476A9262125A /* ../native/src/rdp_bridge_freerdp.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1E138207279744FCA947415A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = X3SYAGVA6K;
+				ENABLE_PREVIEWS = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited) arm64";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"RDP_BRIDGE_HAS_FREERDP=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../native/include",
+					"$(SRCROOT)/../native/dist/freerdp/include",
+					"$(SRCROOT)/../native/dist/openssl/ios/include",
+					"$(SRCROOT)/../native/dist/openssl/iossimulator/include",
+				);
+				INFOPLIST_FILE = RDPAirPlay/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(SRCROOT)/../native/dist/freerdp/lib/iphoneos",
+					"$(SRCROOT)/../native/dist/openssl/ios/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(SRCROOT)/../native/dist/freerdp/lib/iphonesimulator",
+					"$(SRCROOT)/../native/dist/openssl/iossimulator/lib",
+				);
+				MARKETING_VERSION = 0.1.0;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lfreerdp-client3",
+					"-lremdesk-client",
+					"-lremdesk-common",
+					"-lrdpsnd-common",
+					"-lfreerdp3",
+					"-lfreerdp-codecs",
+					"-lfreerdp-primitives",
+					"-lwinpr3",
+					"-lssl",
+					"-lcrypto",
+					"-lz",
+					"-framework",
+					AVFoundation,
+					"-framework",
+					CoreAudio,
+					"-framework",
+					AudioToolbox,
+					"-framework",
+					CoreGraphics,
+					"-framework",
+					Foundation,
+					"-framework",
+					UIKit,
+					"-framework",
+					GameController,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.rdpairplay.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "RDPAirPlay/RDPAirPlay-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		4010B02CCDA648C0989B84D2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4845A643319344EEBC7A0E8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = X3SYAGVA6K;
+				ENABLE_PREVIEWS = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited) arm64";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"RDP_BRIDGE_HAS_FREERDP=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../native/include",
+					"$(SRCROOT)/../native/dist/freerdp/include",
+					"$(SRCROOT)/../native/dist/openssl/ios/include",
+					"$(SRCROOT)/../native/dist/openssl/iossimulator/include",
+				);
+				INFOPLIST_FILE = RDPAirPlay/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(SRCROOT)/../native/dist/freerdp/lib/iphoneos",
+					"$(SRCROOT)/../native/dist/openssl/ios/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(SRCROOT)/../native/dist/freerdp/lib/iphonesimulator",
+					"$(SRCROOT)/../native/dist/openssl/iossimulator/lib",
+				);
+				MARKETING_VERSION = 0.1.0;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lfreerdp-client3",
+					"-lremdesk-client",
+					"-lremdesk-common",
+					"-lrdpsnd-common",
+					"-lfreerdp3",
+					"-lfreerdp-codecs",
+					"-lfreerdp-primitives",
+					"-lwinpr3",
+					"-lssl",
+					"-lcrypto",
+					"-lz",
+					"-framework",
+					AVFoundation,
+					"-framework",
+					CoreAudio,
+					"-framework",
+					AudioToolbox,
+					"-framework",
+					CoreGraphics,
+					"-framework",
+					Foundation,
+					"-framework",
+					UIKit,
+					"-framework",
+					GameController,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.rdpairplay.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "RDPAirPlay/RDPAirPlay-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4E8906E83A8743A68C1F93F3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B160184D231A433CBE720929 /* Build configuration list for PBXProject "RDPAirPlay" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4010B02CCDA648C0989B84D2 /* Debug */,
+				4E8906E83A8743A68C1F93F3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F1EB27589AD7419E9E6F5B92 /* Build configuration list for PBXNativeTarget "RDPAirPlay" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4845A643319344EEBC7A0E8E /* Debug */,
+				1E138207279744FCA947415A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B151346CAC2648E29DF6F1E9 /* Project object */;
+}

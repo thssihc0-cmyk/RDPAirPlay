@@ -1,0 +1,27 @@
+# Xcode
+DerivedData/
+build/
+*.xcuserstate
+*.xcscmblueprint
+xcuserdata/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# FreeRDP build artifacts
+native/build/
+native/dist/
+
+# macOS
+.DS_Store
+
+# Secrets
+*.env
+.env.*
