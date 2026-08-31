@@ -20,6 +20,8 @@ final class RDPSessionController: ObservableObject {
     @Published var pendingZoomScale: CGFloat?
     @Published var mouseMode: RemoteMouseMode = .mousePointer
     @Published var activeModifiers: RDPSessionModifiers = []
+    /// 已启用 RDP 速度优先（关闭远程壁纸/动画/拖动阴影）
+    @Published private(set) var isSpeedOptimized = false
     private(set) var cursor: RDPCursor = .hidden
     var onCursor: ((RDPCursor) -> Void)?
 
@@ -73,6 +75,8 @@ final class RDPSessionController: ObservableObject {
 
     /// 合并高频帧/光标回调，避免打字时主线程 Task 堆积导致卡死被系统杀进程
     private let uiUpdateBuffer = UIUpdateCoalesceBuffer()
+    private var bandwidthEstimator = FrameBandwidthEstimator()
+    private var speedOptimizationReconnectPending = false
 
     func reportLocalError(_ message: String) {
         lastError = .invalidConfiguration(message)
@@ -107,19 +111,14 @@ final class RDPSessionController: ObservableObject {
                 microphone: host.enableMicrophone
             )
             networkMonitor.start()
+            bandwidthEstimator.reset()
 
-            let options = RDPConnectionOptions(
-                hostname: host.hostname,
-                port: host.port,
-                username: host.username,
+            let optimizeForSpeed = NetworkPathObserver.shared.prefersSpeedOptimization
+            try await openSession(
+                host: host,
                 password: password,
-                width: host.effectiveWidth,
-                height: host.effectiveHeight,
-                enableNLA: true,
-                enableSpeaker: host.enableSpeaker,
-                enableMicrophone: host.enableMicrophone
+                optimizeForSpeed: optimizeForSpeed
             )
-            try await session.connect(options: options)
             desktopWidth = host.effectiveWidth
             desktopHeight = host.effectiveHeight
         } catch let error as RDPConnectionError {
@@ -135,6 +134,9 @@ final class RDPSessionController: ObservableObject {
         trackpadPanActive = false
         remotePointer = nil
         networkMonitor.stop()
+        bandwidthEstimator.reset()
+        isSpeedOptimized = false
+        speedOptimizationReconnectPending = false
         audioManager.deactivate()
         await session?.disconnect()
         session = nil
@@ -331,6 +333,9 @@ final class RDPSessionController: ObservableObject {
         state = .disconnected(reason: error.errorDescription)
         releaseHeldModifiers()
         networkMonitor.stop()
+        bandwidthEstimator.reset()
+        isSpeedOptimized = false
+        speedOptimizationReconnectPending = false
         audioManager.deactivate()
         await session?.disconnect()
         session = nil
@@ -343,11 +348,68 @@ final class RDPSessionController: ObservableObject {
             colorMode = suggested
         }
     }
+
+    private func openSession(host: HostProfile, password: String, optimizeForSpeed: Bool) async throws {
+        let options = RDPConnectionOptions(
+            hostname: host.hostname,
+            port: host.port,
+            username: host.username,
+            password: password,
+            width: host.effectiveWidth,
+            height: host.effectiveHeight,
+            enableNLA: true,
+            enableSpeaker: host.enableSpeaker,
+            enableMicrophone: host.enableMicrophone,
+            optimizeForSpeed: optimizeForSpeed
+        )
+        try await session?.connect(options: options)
+        isSpeedOptimized = optimizeForSpeed
+    }
+
+    /// 会话中弱网持续恶化时，重连以应用 RDP 性能标志（壁纸/动画等仅在连接时协商）
+    private func applyAdaptivePerformanceIfNeeded() async {
+        guard case .connected = state else { return }
+        guard !isSpeedOptimized else { return }
+        guard !speedOptimizationReconnectPending else { return }
+        guard networkMonitor.shouldEnableSpeedOptimization else { return }
+        guard networkMonitor.consecutiveLowSamples >= 2 else { return }
+        guard let host else { return }
+
+        speedOptimizationReconnectPending = true
+        releaseHeldModifiers()
+        await session?.disconnect()
+        session = nil
+
+        let newSession = RDPSessionFactory.makeSession()
+        newSession.delegate = self
+        session = newSession
+        state = .connecting
+
+        do {
+            try await openSession(host: host, password: password, optimizeForSpeed: true)
+        } catch let error as RDPConnectionError {
+            speedOptimizationReconnectPending = false
+            await handleFailure(error)
+        } catch {
+            speedOptimizationReconnectPending = false
+            await handleFailure(.disconnected(error.localizedDescription))
+        }
+    }
+
+    private func recordFrameMetrics(_ frame: RDPFrame) {
+        guard let metrics = bandwidthEstimator.recordFrame(width: frame.width, height: frame.height) else {
+            return
+        }
+        networkMonitor.report(rttMs: metrics.rttMs, lossPercent: 0, kbps: metrics.kbps)
+        applyAdaptiveColorModeIfNeeded()
+        Task { await applyAdaptivePerformanceIfNeeded() }
+    }
 }
 
 extension RDPSessionController: RDPSessionDelegate {
     nonisolated func sessionDidConnect() {
         Task { @MainActor in
+            speedOptimizationReconnectPending = false
             state = .connected
             lastError = nil
             if cursor.image == nil {
@@ -389,6 +451,7 @@ extension RDPSessionController: RDPSessionDelegate {
         latestFrame = frame
         desktopWidth = frame.width
         desktopHeight = frame.height
+        recordFrameMetrics(frame)
         presentThrottledFrame()
     }
 
@@ -437,6 +500,7 @@ extension RDPSessionController: RDPSessionDelegate {
         Task { @MainActor in
             networkMonitor.report(rttMs: rttMs, lossPercent: lossPercent, kbps: kbps)
             applyAdaptiveColorModeIfNeeded()
+            await applyAdaptivePerformanceIfNeeded()
         }
     }
 }

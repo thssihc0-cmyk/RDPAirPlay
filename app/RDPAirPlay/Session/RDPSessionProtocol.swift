@@ -12,6 +12,8 @@ struct RDPConnectionOptions: Equatable {
     let enableNLA: Bool
     let enableSpeaker: Bool
     let enableMicrophone: Bool
+    /// 速度优先：通知 Windows 关闭壁纸、拖动阴影与过渡动画
+    let optimizeForSpeed: Bool
 }
 
 struct RDPMouseEvent {

@@ -13,7 +13,8 @@
 | 分辨率预设与自定义 | ✅ | F-DISP-01 | `HostProfile`, `ResolutionPreset` |
 | 会话中改分辨率 | 🔶 | F-DISP-02 | `RDPBridge` 接口已有，Display Control 待完善 |
 | 色彩模式 全彩/灰度/黑白 | ✅ | F-NET-02/03/04 | `ColorModeProcessor` |
-| 弱网自适应 | 🔶 | F-NET-01 | `NetworkQualityMonitor`（指标依赖 native） |
+| 弱网自适应（色彩 + 带宽估算） | 🔶 | F-NET-01 | `NetworkQualityMonitor`, `FrameBandwidthEstimator` |
+| **弱网速度优先**（RDP 性能标志） | ✅ | F-NET-07 | `rdp_bridge_freerdp.c`, `NetworkPathObserver`, `RDPSessionController` |
 | **仅电视扩展模式** | ✅ | F-AP-01/02 | `SecondScreenGuideView`, `SessionView` |
 | 触控 / 右键 / 双指滚动 | ✅ | F-IN-03 | `TouchpadView` |
 | 触控板相对模式（扩展布局） | ✅ | F-IN-02 | `TouchpadView` |
@@ -59,10 +60,12 @@ app/RDPAirPlay/                    Swift 源码（应用显示名 RDP AirPlay）
     ExternalDisplayManager.swift   外接屏检测、扩展/镜像、帧分流
     HostStore.swift, KeychainService.swift
     ColorModeProcessor.swift, AudioSessionManager.swift
+    NetworkPathObserver.swift       蜂窝/受限网络检测
     ScreenWakeLock.swift           会话期间 UIApplication.isIdleTimerDisabled
     SessionOrientationManager.swift
   Session/
-    RDPSessionController.swift     会话中枢：帧节流、输入、色彩、外接屏、防锁屏
+    RDPSessionController.swift     会话中枢：帧节流、弱网重连、输入、色彩、外接屏、防锁屏
+    FrameBandwidthEstimator.swift  帧间隔/像素量估算带宽
     RDPSessionProtocol.swift       Native / Stub 工厂
     RemoteMouseMode.swift          directTouch / mousePointer
     StubRDPSession.swift           无 FreeRDP 时的占位会话
@@ -143,6 +146,15 @@ docs/                              需求、项目说明、用户指南、本文
 - `AudioSessionManager` 连接前请求麦克风权限，配置 `playAndRecord` + `voiceChat`。
 
 Windows 端需允许 **音频录制重定向**（组策略或 RDS 集合）；远程输入设备应出现 Remote Audio。
+
+### 弱网速度优先（RDP Performance Flags）
+
+文件：`native/src/rdp_bridge_freerdp.c`, `Services/NetworkPathObserver.swift`, `Session/RDPSessionController.swift`
+
+- `rdp_bridge_config.optimize_for_speed` 为 1 时，通过 FreeRDP 设置 `DisableWallpaper`、`DisableFullWindowDrag`、`DisableMenuAnims`、`DisableThemes` 等，并调用 `freerdp_performance_flags_make()`。
+- **连接时**：`NetworkPathObserver` 检测蜂窝 / 低数据 / 昂贵网络 → 速度优先；Wi‑Fi 默认画质优先。
+- **会话中**：`FrameBandwidthEstimator` 估算码率；低档持续约 6 秒后 **自动重连** 以应用性能标志（RDP 仅在握手时协商）。
+- 会话设置 **网络** 区展示「速度优先 / 画质优先」状态。
 
 ### 触控板布局（电视扩展）
 

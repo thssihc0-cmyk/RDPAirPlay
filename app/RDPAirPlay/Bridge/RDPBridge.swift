@@ -64,7 +64,8 @@ final class NativeRDPSession: RDPSessionHandling {
                             height: Int32(options.height),
                             enable_nla: options.enableNLA ? 1 : 0,
                             enable_speaker: options.enableSpeaker ? 1 : 0,
-                            enable_microphone: options.enableMicrophone ? 1 : 0
+                            enable_microphone: options.enableMicrophone ? 1 : 0,
+                            optimize_for_speed: options.optimizeForSpeed ? 1 : 0
                         )
                         return rdp_bridge_connect(bridgeHandle, &config, &callbacks)
                     }

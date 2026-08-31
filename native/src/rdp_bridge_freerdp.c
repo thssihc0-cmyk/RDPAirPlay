@@ -8,6 +8,7 @@
 #include <freerdp/codec/color.h>
 #include <freerdp/error.h>
 #include <freerdp/freerdp.h>
+#include <freerdp/settings.h>
 #include <freerdp/gdi/gdi.h>
 #include <freerdp/graphics.h>
 #include <freerdp/input.h>
@@ -412,6 +413,38 @@ static void bridge_emit_connect_error(rdp_bridge_handle* handle, freerdp* instan
     rdp_bridge_emit_event(handle, RDP_BRIDGE_EVENT_ERROR, message);
 }
 
+static BOOL bridge_apply_performance_settings(rdpSettings* settings, int optimize_for_speed) {
+    if (optimize_for_speed) {
+        if (!freerdp_settings_set_bool(settings, FreeRDP_DisableWallpaper, TRUE))
+            return FALSE;
+        if (!freerdp_settings_set_bool(settings, FreeRDP_DisableFullWindowDrag, TRUE))
+            return FALSE;
+        if (!freerdp_settings_set_bool(settings, FreeRDP_DisableMenuAnims, TRUE))
+            return FALSE;
+        if (!freerdp_settings_set_bool(settings, FreeRDP_DisableThemes, TRUE))
+            return FALSE;
+        if (!freerdp_settings_set_bool(settings, FreeRDP_AllowFontSmoothing, FALSE))
+            return FALSE;
+        if (!freerdp_settings_set_bool(settings, FreeRDP_AllowDesktopComposition, FALSE))
+            return FALSE;
+    } else {
+        if (!freerdp_settings_set_bool(settings, FreeRDP_DisableWallpaper, FALSE))
+            return FALSE;
+        if (!freerdp_settings_set_bool(settings, FreeRDP_DisableFullWindowDrag, FALSE))
+            return FALSE;
+        if (!freerdp_settings_set_bool(settings, FreeRDP_DisableMenuAnims, FALSE))
+            return FALSE;
+        if (!freerdp_settings_set_bool(settings, FreeRDP_DisableThemes, FALSE))
+            return FALSE;
+        if (!freerdp_settings_set_bool(settings, FreeRDP_AllowFontSmoothing, TRUE))
+            return FALSE;
+        if (!freerdp_settings_set_bool(settings, FreeRDP_AllowDesktopComposition, TRUE))
+            return FALSE;
+    }
+    freerdp_performance_flags_make(settings);
+    return TRUE;
+}
+
 static BOOL bridge_apply_settings(rdp_bridge_handle* handle, rdpSettings* settings) {
     const rdp_bridge_config* cfg = &handle->config;
 
@@ -484,6 +517,9 @@ static BOOL bridge_apply_settings(rdp_bridge_handle* handle, rdpSettings* settin
     if (!freerdp_settings_set_uint32(settings, FreeRDP_ColorPointerCacheSize, 20))
         return FALSE;
     if (!freerdp_settings_set_uint32(settings, FreeRDP_LargePointerFlag, 1))
+        return FALSE;
+
+    if (!bridge_apply_performance_settings(settings, cfg->optimize_for_speed))
         return FALSE;
 
     return TRUE;

@@ -17,14 +17,14 @@ iOS 远程桌面客户端（仓库名 `RDPAirPlay`）：通过 RDP 控制 Window
 
 1. **电视扩展（必需）**：AirPlay 后电视独立显示远程桌面，手机当触控板；未连接电视时显示引导页，RDP 可在后台保持连接。
 2. **MS RDP 风格操作**：大触控板、双指滚动、完整软键盘与功能键、系统中文 IME。
-3. **画质可降**：网络差时切灰度或黑白，优先保证能点到按钮。
+3. **画质可降**：网络差时切灰度或黑白，并自动关闭远程壁纸与动画，优先保证能点到按钮。
 4. **声音双向**：远程系统声与应用声播放；iOS 麦克风经 RDP audin 重定向到 Windows，供微信等应用采集。
 5. **远程接电话**：电脑上微信来电，在 iOS 上点接听——走「远程桌面 + 麦克风/扬声器重定向」，不是 CallKit 系统电话。
 6. **会话保活**：远程连接期间禁止自动锁屏，避免通话与输入中断。
 
 被控端为用户自己的 Windows 10/11（已开启远程桌面）。第一期不强制安装自研 Windows Agent。
 
-## 当前版本能力（0.1.0）
+## 当前版本能力（0.1.1）
 
 | 能力 | 状态 |
 |------|------|
@@ -34,6 +34,7 @@ iOS 远程桌面客户端（仓库名 `RDPAirPlay`）：通过 RDP 控制 Window
 | 触控板最大化 + 底部左/右键与 MS RDP 软键盘 | ✅ |
 | 系统软键盘（中文 IME）与蓝牙键鼠 | ✅ |
 | 全彩 / 灰度 / 黑白 + 弱网自动降档 | ✅ |
+| **弱网速度优先**（关闭远程壁纸/拖动阴影/动画） | ✅ |
 | AirPlay 扩展 Scene（电视桌面 + 手机触控板） | ✅ |
 | 远程音频播放（rdpsnd） | ✅ 真机已验证 |
 | 远程麦克风重定向（audin-ios） | ✅ 已实现（需 iOS 授权 + Windows 允许录制重定向） |
@@ -115,6 +116,7 @@ iOS 远程桌面客户端（仓库名 `RDPAirPlay`）：通过 RDP 控制 Window
 | 协议 | `RDPBridge` / FreeRDP：图形帧、光标、键鼠、audin/rdpsnd |
 | 外接屏 | `ExternalDisplayManager`：扩展 Scene、帧分流 |
 | 媒体 | `AudioSessionManager`（权限 + playAndRecord）、`ScreenWakeLock` |
+| 弱网 | `NetworkQualityMonitor`、`NetworkPathObserver`、`FrameBandwidthEstimator` |
 | 输入 | `SessionInputCoordinator`：与帧刷新解耦的 IME 宿主 |
 
 ## 技术选型

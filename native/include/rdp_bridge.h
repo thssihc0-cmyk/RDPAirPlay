@@ -40,6 +40,8 @@ typedef struct rdp_bridge_config {
     int enable_nla;
     int enable_speaker;
     int enable_microphone;
+    /// 1 = 速度优先：关闭壁纸、窗口拖动阴影、菜单动画等 Windows 视觉效果
+    int optimize_for_speed;
 } rdp_bridge_config;
 
 typedef struct rdp_bridge_frame {

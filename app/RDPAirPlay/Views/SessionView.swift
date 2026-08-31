@@ -245,6 +245,11 @@ struct SessionView: View {
                 Section("网络") {
                     Text("档位：\(controller.networkMonitor.tier.rawValue)")
                     Text("估算码率：\(controller.networkMonitor.estimatedKbps) kbps")
+                    Text(controller.isSpeedOptimized
+                         ? "速度优先：已关闭远程壁纸与动画"
+                         : "画质优先：远程视觉效果已开启")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
 
                 Section {
