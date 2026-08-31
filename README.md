@@ -60,6 +60,7 @@ iOS 远程桌面客户端（仓库名 `RDPAirPlay`）：通过 RDP 控制 Window
 | 文档 | 内容 |
 |------|------|
 | [docs/USER_GUIDE.md](docs/USER_GUIDE.md) | **用户使用说明**：连接、AirPlay、键盘、音频、常见问题 |
+| [docs/参考APP说明.md](docs/参考APP说明.md) | 外部 PRD 对照参考（非开发需求） |
 | [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) | 产品需求：范围、功能 ID、非功能、分期、验收用例 |
 | [docs/PROJECT.md](docs/PROJECT.md) | 项目说明：定位、架构、风险、里程碑、工程与合规 |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | 开发指南：当前进度、工程结构、构建步骤 |
