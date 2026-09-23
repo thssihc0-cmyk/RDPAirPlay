@@ -239,15 +239,22 @@ def xcconfig(is_debug, is_target):
         out.append('\t\t\t\tCODE_SIGN_STYLE = Automatic;')
         out.append('\t\t\t\tCOMBINE_HIDPI_IMAGES = YES;')
         out.append('\t\t\t\tCURRENT_PROJECT_VERSION = 1;')
-        out.append('\t\t\t\tENABLE_HARDENED_RUNTIME = YES;')
+        out.append('\t\t\t\tENABLE_HARDENED_RUNTIME = NO;')
         out.append('\t\t\t\tGENERATE_INFOPLIST_FILE = YES;')
         out.append('\t\t\t\tINFOPLIST_KEY_CFBundleDisplayName = macrdp;')
         out.append('\t\t\t\tINFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";')
         out.append('\t\t\t\tINFOPLIST_KEY_NSHumanReadableCopyright = "";')
         out.append('\t\t\t\tINFOPLIST_KEY_NSPrincipalClass = NSApplication;')
+        openssl_root = "/usr/local/opt/openssl@1.1"
+        if not os.path.isdir(openssl_root):
+            openssl_root = "/usr/local/opt/openssl@3"
         out.append('\t\t\t\tLD_RUNPATH_SEARCH_PATHS = (')
         out.append('\t\t\t\t\t"$(inherited)",')
         out.append('\t\t\t\t\t"@executable_path/../Frameworks",')
+        if HAS_FREERDP:
+            out.append(f'\t\t\t\t\t"{FREERDP_PREFIX}/lib",')
+            if os.path.isdir(openssl_root):
+                out.append(f'\t\t\t\t\t"{openssl_root}/lib",')
         out.append("\t\t\t\t);")
         out.append('\t\t\t\tMACOSX_DEPLOYMENT_TARGET = 13.0;')
         out.append('\t\t\t\tMARKETING_VERSION = 0.1.0;')
@@ -262,7 +269,11 @@ def xcconfig(is_debug, is_target):
             out.append(f'\t\t\t\t\t"{FREERDP_PREFIX}/include",')
             out.append(f'\t\t\t\t\t"{FREERDP_PREFIX}/include/freerdp3",')
             out.append(f'\t\t\t\t\t"{FREERDP_PREFIX}/include/winpr3",')
+            if os.path.isdir(openssl_root):
+                out.append(f'\t\t\t\t\t"{openssl_root}/include",')
         out.append("\t\t\t\t);")
+        if HAS_FREERDP and os.path.isdir(openssl_root):
+            gcc_flags.append(f"-I{openssl_root}/include")
         out.append('\t\t\t\tOTHER_CFLAGS = (')
         for flag in gcc_flags:
             out.append(f'\t\t\t\t\t"{flag}",')
@@ -270,6 +281,8 @@ def xcconfig(is_debug, is_target):
         if HAS_FREERDP:
             out.append("\t\t\t\tLIBRARY_SEARCH_PATHS = (")
             out.append(f'\t\t\t\t\t"{FREERDP_PREFIX}/lib",')
+            if os.path.isdir(openssl_root):
+                out.append(f'\t\t\t\t\t"{openssl_root}/lib",')
             out.append("\t\t\t\t);")
             out.append("\t\t\t\tOTHER_LDFLAGS = (")
             out.append('\t\t\t\t\t"-lfreerdp3",')

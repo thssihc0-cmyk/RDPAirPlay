@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "41C28A5C92224A678B593380"
+               BlueprintIdentifier = "38FD5E93EFFD452BB562CCEB"
                BuildableName = "MacRDP.app"
                BlueprintName = "MacRDP"
                ReferencedContainer = "container:MacRDP.xcodeproj">
@@ -36,7 +36,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "41C28A5C92224A678B593380"
+            BlueprintIdentifier = "38FD5E93EFFD452BB562CCEB"
             BuildableName = "MacRDP.app"
             BlueprintName = "MacRDP"
             ReferencedContainer = "container:MacRDP.xcodeproj">

@@ -22,8 +22,10 @@
 #include <winpr/synch.h>
 #include <openssl/crypto.h>
 #include <openssl/err.h>
-#include <openssl/provider.h>
 #include <openssl/ssl.h>
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+#include <openssl/provider.h>
+#endif
 
 #include <errno.h>
 #include <fcntl.h>
@@ -33,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <TargetConditionals.h>
 #include <unistd.h>
 
 #define TAG "rdp_bridge"
@@ -49,11 +52,19 @@ static void bridge_init_openssl(void) {
     if (once)
         return;
     once = 1;
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
     OPENSSL_init_crypto(OPENSSL_INIT_NO_LOAD_CONFIG | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL);
     OPENSSL_init_ssl(OPENSSL_INIT_NO_LOAD_CONFIG | OPENSSL_INIT_LOAD_SSL_STRINGS, NULL);
+#else
+    SSL_library_init();
+    OpenSSL_add_all_algorithms();
+    SSL_load_error_strings();
+#endif
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
     (void)OSSL_PROVIDER_load(NULL, "default");
     if (!OSSL_PROVIDER_load(NULL, "legacy"))
         ERR_clear_error();
+#endif
     ERR_clear_error();
 }
 
@@ -482,9 +493,15 @@ static BOOL bridge_apply_settings(rdp_bridge_handle* handle, rdpSettings* settin
         return FALSE;
     if (!freerdp_settings_set_uint32(settings, FreeRDP_TcpConnectTimeout, 30000))
         return FALSE;
-    if (!freerdp_settings_set_uint32(settings, FreeRDP_TlsSecLevel, FREERDP_TLS_SECLEVEL_0))
+    if (!freerdp_settings_set_uint32(settings, FreeRDP_TlsSecLevel, 0))
         return FALSE;
-    if (!freerdp_settings_set_string(settings, FreeRDP_ClientHostname, "RDPAirPlay"))
+    if (!freerdp_settings_set_string(settings, FreeRDP_ClientHostname,
+#if TARGET_OS_IPHONE
+                                     "RDPAirPlay"
+#else
+                                     "macrdp"
+#endif
+                                     ))
         return FALSE;
 
     if (!freerdp_settings_set_bool(settings, FreeRDP_AudioPlayback, cfg->enable_speaker ? TRUE : FALSE))
@@ -499,9 +516,14 @@ static BOOL bridge_apply_settings(rdp_bridge_handle* handle, rdpSettings* settin
     }
 
     if (cfg->enable_microphone) {
+#if TARGET_OS_IPHONE
         const char* audin_args[] = { AUDIN_CHANNEL_NAME, "ios" };
         if (!freerdp_client_add_dynamic_channel(settings, ARRAYSIZE(audin_args), audin_args))
             return FALSE;
+#else
+        /* macOS: mic is P1; skip audin subsystem registration for now */
+        (void)AUDIN_CHANNEL_NAME;
+#endif
     }
 
     if (!freerdp_settings_set_bool(settings, FreeRDP_GrabKeyboard, FALSE))
