@@ -1164,7 +1164,7 @@ int rdp_freerdp_connect_async(rdp_bridge_handle* handle) {
     rdp_bridge_emit_event(
         handle,
         RDP_BRIDGE_EVENT_ERROR,
-        "FreeRDP not built. Run scripts/build_openssl_ios.sh && scripts/build_freerdp_ios.sh"
+        "FreeRDP not built. iOS: scripts/build_openssl_ios.sh && scripts/build_freerdp_ios.sh; macOS: macos/scripts/build_freerdp_macos.sh"
     );
     return -1;
 }

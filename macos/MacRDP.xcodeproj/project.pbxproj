@@ -1,0 +1,348 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3B1F019C523B42CBACC0427A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34E78A7465574C1A9FA3D12C /* Assets.xcassets */; };
+		6AFAE9DA94FB46E683467D16 /* MacRDPApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6252843AB174E409384B21A /* MacRDPApp.swift */; };
+		813D225E0ADD49C595184ABF /* RDPBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B327D027C7094A048C9A9A72 /* RDPBridge.swift */; };
+		CED265B67ECB4E9AA5D96298 /* RDPFrameConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1184A505374EFE85B74CAA /* RDPFrameConverter.swift */; };
+		60A84576AE0845348EAD8E1C /* ColorMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E85B0D9C13545A580D5B547 /* ColorMode.swift */; };
+		4B8DC10AA139454F9A7E521E /* HostProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13FF2206C40E41EE943B6DD8 /* HostProfile.swift */; };
+		ADC4638C5CED49B29C68062D /* RDPConnectionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BA19CCB2D041A68915D2A5 /* RDPConnectionError.swift */; };
+		46923AAAA143400EA3601123 /* ResolutionPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA162DCAF484E08A84F99C0 /* ResolutionPreset.swift */; };
+		B81BD480384B47F482958781 /* SessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4FE9543791438FB3C900D5 /* SessionState.swift */; };
+		7FA872E8D2ED43A580DFEA1E /* WeakNetHooks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F176C5ED25564FA0926B7BD9 /* WeakNetHooks.swift */; };
+		F750ACB2B6C540C6B20ACF86 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B338D88E3C4C28A9BBF0C7 /* ContentView.swift */; };
+		C97F35AF57CC44A0AD52C217 /* HostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65559738298D478FB0ACEF1A /* HostDetailView.swift */; };
+		5595F4A287444FEBA1A8BCFC /* HostEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80B18B83C0F1401AAA549542 /* HostEditorView.swift */; };
+		BE916D83C1E5406C932468B0 /* SessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BE46D90E8942089FA7AE82 /* SessionView.swift */; };
+		38F2537A4C97458DABC92D28 /* ColorModeProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958FE42C566E4CAA910781B0 /* ColorModeProcessor.swift */; };
+		4D2E57809A294A7E837B88C2 /* HostStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB1BE9EA4EA646C68F557252 /* HostStore.swift */; };
+		58090D6A2F0548B88232DD56 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D354E2401B143A5A39D1B5B /* KeychainService.swift */; };
+		CC023474A52F4179AFFB43AB /* RDPSessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA5D9D72BCE4873A5ABF7D2 /* RDPSessionController.swift */; };
+		FA7857D083584346AF519934 /* RDPSessionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59FC2B6850F8403AAB3027F2 /* RDPSessionProtocol.swift */; };
+		23F149FA5B69438F9757D0BC /* StubRDPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF0DD6A820B4C6A8B4790DF /* StubRDPSession.swift */; };
+		BE6D229B474A4C2D8307FE38 /* rdp_bridge.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CC6456F78254D20A3B69796 /* rdp_bridge.c */; };
+		8D53676C89B34DA4818FDDA9 /* rdp_bridge_freerdp.c in Sources */ = {isa = PBXBuildFile; fileRef = FD98F66676EF45098A82695B /* rdp_bridge_freerdp.c */; };
+		FA44C7E07C354B99A0DEC99A /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A5C60E9B52F46B98051140A /* AppKit.framework */; };
+		CBBC81292FED4D7F9728510A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62A793DDC76D445A85F406FD /* SwiftUI.framework */; };
+		CC677B10E53148A2B82BBAF3 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CBF5E1DC9A542A98E5C61E3 /* Security.framework */; };
+		F7510FCCCE6E491AB1AEEAFB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE6291D51E494BD19D1BA2B9 /* CoreGraphics.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		697D946093D942C2A3C71478 /* MacRDP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacRDP.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		34E78A7465574C1A9FA3D12C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MacRDP/Resources/Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		51E4A3D6E56A45E5A937CF24 /* MacRDP-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MacRDP/MacRDP-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
+		E6252843AB174E409384B21A /* MacRDPApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/MacRDPApp.swift"; sourceTree = SOURCE_ROOT; };
+		B327D027C7094A048C9A9A72 /* RDPBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Bridge/RDPBridge.swift"; sourceTree = SOURCE_ROOT; };
+		CC1184A505374EFE85B74CAA /* RDPFrameConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Bridge/RDPFrameConverter.swift"; sourceTree = SOURCE_ROOT; };
+		9E85B0D9C13545A580D5B547 /* ColorMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Models/ColorMode.swift"; sourceTree = SOURCE_ROOT; };
+		13FF2206C40E41EE943B6DD8 /* HostProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Models/HostProfile.swift"; sourceTree = SOURCE_ROOT; };
+		03BA19CCB2D041A68915D2A5 /* RDPConnectionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Models/RDPConnectionError.swift"; sourceTree = SOURCE_ROOT; };
+		1FA162DCAF484E08A84F99C0 /* ResolutionPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Models/ResolutionPreset.swift"; sourceTree = SOURCE_ROOT; };
+		CE4FE9543791438FB3C900D5 /* SessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Models/SessionState.swift"; sourceTree = SOURCE_ROOT; };
+		F176C5ED25564FA0926B7BD9 /* WeakNetHooks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/WeakNet/WeakNetHooks.swift"; sourceTree = SOURCE_ROOT; };
+		82B338D88E3C4C28A9BBF0C7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Views/ContentView.swift"; sourceTree = SOURCE_ROOT; };
+		65559738298D478FB0ACEF1A /* HostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Views/HostDetailView.swift"; sourceTree = SOURCE_ROOT; };
+		80B18B83C0F1401AAA549542 /* HostEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Views/HostEditorView.swift"; sourceTree = SOURCE_ROOT; };
+		68BE46D90E8942089FA7AE82 /* SessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Views/SessionView.swift"; sourceTree = SOURCE_ROOT; };
+		958FE42C566E4CAA910781B0 /* ColorModeProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Services/ColorModeProcessor.swift"; sourceTree = SOURCE_ROOT; };
+		CB1BE9EA4EA646C68F557252 /* HostStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Services/HostStore.swift"; sourceTree = SOURCE_ROOT; };
+		3D354E2401B143A5A39D1B5B /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Services/KeychainService.swift"; sourceTree = SOURCE_ROOT; };
+		EDA5D9D72BCE4873A5ABF7D2 /* RDPSessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Session/RDPSessionController.swift"; sourceTree = SOURCE_ROOT; };
+		59FC2B6850F8403AAB3027F2 /* RDPSessionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Session/RDPSessionProtocol.swift"; sourceTree = SOURCE_ROOT; };
+		EFF0DD6A820B4C6A8B4790DF /* StubRDPSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacRDP/Session/StubRDPSession.swift"; sourceTree = SOURCE_ROOT; };
+		6CC6456F78254D20A3B69796 /* rdp_bridge.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "../native/src/rdp_bridge.c"; sourceTree = SOURCE_ROOT; };
+		FD98F66676EF45098A82695B /* rdp_bridge_freerdp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "../native/src/rdp_bridge_freerdp.c"; sourceTree = SOURCE_ROOT; };
+		4A5C60E9B52F46B98051140A /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		62A793DDC76D445A85F406FD /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		2CBF5E1DC9A542A98E5C61E3 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		AE6291D51E494BD19D1BA2B9 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8722B06A5E2B40CCB7A90630 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA44C7E07C354B99A0DEC99A /* AppKit.framework in Frameworks */,
+				CBBC81292FED4D7F9728510A /* SwiftUI.framework in Frameworks */,
+				CC677B10E53148A2B82BBAF3 /* Security.framework in Frameworks */,
+				F7510FCCCE6E491AB1AEEAFB /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C448B10C129142A5B7C2139C = {
+			isa = PBXGroup;
+			children = (
+				2BF1A90A093D4780A97845F7 /* MacRDP */,
+				F1A4BB2C29324F53B83DEDE4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2BF1A90A093D4780A97845F7 /* MacRDP */ = {
+			isa = PBXGroup;
+			children = (
+				34E78A7465574C1A9FA3D12C /* Assets.xcassets */,
+				51E4A3D6E56A45E5A937CF24 /* MacRDP-Bridging-Header.h */,
+				E6252843AB174E409384B21A /* MacRDPApp.swift */,
+				B327D027C7094A048C9A9A72 /* RDPBridge.swift */,
+				CC1184A505374EFE85B74CAA /* RDPFrameConverter.swift */,
+				9E85B0D9C13545A580D5B547 /* ColorMode.swift */,
+				13FF2206C40E41EE943B6DD8 /* HostProfile.swift */,
+				03BA19CCB2D041A68915D2A5 /* RDPConnectionError.swift */,
+				1FA162DCAF484E08A84F99C0 /* ResolutionPreset.swift */,
+				CE4FE9543791438FB3C900D5 /* SessionState.swift */,
+				F176C5ED25564FA0926B7BD9 /* WeakNetHooks.swift */,
+				82B338D88E3C4C28A9BBF0C7 /* ContentView.swift */,
+				65559738298D478FB0ACEF1A /* HostDetailView.swift */,
+				80B18B83C0F1401AAA549542 /* HostEditorView.swift */,
+				68BE46D90E8942089FA7AE82 /* SessionView.swift */,
+				958FE42C566E4CAA910781B0 /* ColorModeProcessor.swift */,
+				CB1BE9EA4EA646C68F557252 /* HostStore.swift */,
+				3D354E2401B143A5A39D1B5B /* KeychainService.swift */,
+				EDA5D9D72BCE4873A5ABF7D2 /* RDPSessionController.swift */,
+				59FC2B6850F8403AAB3027F2 /* RDPSessionProtocol.swift */,
+				EFF0DD6A820B4C6A8B4790DF /* StubRDPSession.swift */,
+				6CC6456F78254D20A3B69796 /* rdp_bridge.c */,
+				FD98F66676EF45098A82695B /* rdp_bridge_freerdp.c */,
+				4A5C60E9B52F46B98051140A /* AppKit.framework */,
+				62A793DDC76D445A85F406FD /* SwiftUI.framework */,
+				2CBF5E1DC9A542A98E5C61E3 /* Security.framework */,
+				AE6291D51E494BD19D1BA2B9 /* CoreGraphics.framework */,
+			);
+			path = "";
+			sourceTree = "<group>";
+		};
+		F1A4BB2C29324F53B83DEDE4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				697D946093D942C2A3C71478 /* MacRDP.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		33A05712AD2D490398DD6A49 /* MacRDP */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 99AA1675BC0E4FC0AFE96FE9 /* Build configuration list for PBXNativeTarget "MacRDP" */;
+			buildPhases = (
+				F113AB702DCF4C45A2E509A6 /* Sources */,
+				8722B06A5E2B40CCB7A90630 /* Frameworks */,
+				E3DC25C8995340ECB1F9BF29 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MacRDP;
+			productName = MacRDP;
+			productReference = 697D946093D942C2A3C71478 /* MacRDP.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		94896F40CBD04B90AC3A2420 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1520;
+				LastUpgradeCheck = 1520;
+			};
+			buildConfigurationList = 43D1958549414B1B907E605D /* Build configuration list for PBXProject "MacRDP" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C448B10C129142A5B7C2139C;
+			productRefGroup = F1A4BB2C29324F53B83DEDE4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				33A05712AD2D490398DD6A49 /* MacRDP */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E3DC25C8995340ECB1F9BF29 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B1F019C523B42CBACC0427A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F113AB702DCF4C45A2E509A6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6AFAE9DA94FB46E683467D16 /* MacRDPApp.swift in Sources */,
+				813D225E0ADD49C595184ABF /* RDPBridge.swift in Sources */,
+				CED265B67ECB4E9AA5D96298 /* RDPFrameConverter.swift in Sources */,
+				60A84576AE0845348EAD8E1C /* ColorMode.swift in Sources */,
+				4B8DC10AA139454F9A7E521E /* HostProfile.swift in Sources */,
+				ADC4638C5CED49B29C68062D /* RDPConnectionError.swift in Sources */,
+				46923AAAA143400EA3601123 /* ResolutionPreset.swift in Sources */,
+				B81BD480384B47F482958781 /* SessionState.swift in Sources */,
+				7FA872E8D2ED43A580DFEA1E /* WeakNetHooks.swift in Sources */,
+				F750ACB2B6C540C6B20ACF86 /* ContentView.swift in Sources */,
+				C97F35AF57CC44A0AD52C217 /* HostDetailView.swift in Sources */,
+				5595F4A287444FEBA1A8BCFC /* HostEditorView.swift in Sources */,
+				BE916D83C1E5406C932468B0 /* SessionView.swift in Sources */,
+				38F2537A4C97458DABC92D28 /* ColorModeProcessor.swift in Sources */,
+				4D2E57809A294A7E837B88C2 /* HostStore.swift in Sources */,
+				58090D6A2F0548B88232DD56 /* KeychainService.swift in Sources */,
+				CC023474A52F4179AFFB43AB /* RDPSessionController.swift in Sources */,
+				FA7857D083584346AF519934 /* RDPSessionProtocol.swift in Sources */,
+				23F149FA5B69438F9757D0BC /* StubRDPSession.swift in Sources */,
+				BE6D229B474A4C2D8307FE38 /* rdp_bridge.c in Sources */,
+				8D53676C89B34DA4818FDDA9 /* rdp_bridge_freerdp.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		BA60EA2751034AECA3D5CA6D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		E67F5F17DE044C98B227AF47 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_DYNAMIC_NO_PIC = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		942B90F8DCB241889336CCBE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = macrdp;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.macrdp.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				SWIFT_OBJC_BRIDGING_HEADER = "MacRDP/MacRDP-Bridging-Header.h";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../native/include",
+				);
+				OTHER_CFLAGS = (
+					"-I$(SRCROOT)/../native/include",
+				);
+				ARCHS = "x86_64";
+			};
+			name = Debug;
+		};
+		D7B67787FFAC48239AA86383 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = macrdp;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.macrdp.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				SWIFT_OBJC_BRIDGING_HEADER = "MacRDP/MacRDP-Bridging-Header.h";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../native/include",
+				);
+				OTHER_CFLAGS = (
+					"-I$(SRCROOT)/../native/include",
+				);
+				ARCHS = "x86_64";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		43D1958549414B1B907E605D /* Build configuration list for PBXProject "MacRDP" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BA60EA2751034AECA3D5CA6D /* Debug */,
+				E67F5F17DE044C98B227AF47 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		99AA1675BC0E4FC0AFE96FE9 /* Build configuration list for PBXNativeTarget "MacRDP" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				942B90F8DCB241889336CCBE /* Debug */,
+				D7B67787FFAC48239AA86383 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 94896F40CBD04B90AC3A2420 /* Project object */;
+}
