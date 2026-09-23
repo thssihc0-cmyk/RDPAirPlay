@@ -5,6 +5,19 @@
 
 需求基线：项目 Agent Store `docs/requirements.md`（0.3-locked）与弱网方案 A 主路径。
 
+## 已冻结默认（Jack 2026-09-23，不再阻塞）
+
+| ID | 默认 |
+|----|------|
+| R1 | macOS 13+；Apple Silicon 优先，Intel 尽力 |
+| R2 | RDP 8.1+；NLA 默认开；UDP 尽力（不可用不成硬失败） |
+| R3 | 弱网验收暂定性 |
+| R4 | 剪贴板 text+image；盘符=用户自选文件夹；麦克风=P1（不挡 MVP） |
+| R5 | 多屏 P1；打印机 P2 |
+| 弱网 | **A** 主路径 + 三色 + 输入优先 + 重连；评估 **UDP (B)** |
+
+代码常量：`MacRDP/Models/ProductDefaults.swift`。
+
 ## 首切片能力
 
 | 能力 | 状态 | 需求 ID |

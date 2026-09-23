@@ -278,7 +278,9 @@ def xcconfig(is_debug, is_target):
             out.append('\t\t\t\t\t"-lssl",')
             out.append('\t\t\t\t\t"-lcrypto",')
             out.append("\t\t\t\t);")
+        # R1: Apple Silicon primary; Intel best-effort — build for host arch in Debug
         out.append(f'\t\t\t\tARCHS = "{HOST_ARCH}";')
+        out.append('\t\t\t\tONLY_ACTIVE_ARCH = YES;')
     out.append("\t\t\t};")
     out.append(f'\t\t\tname = {name};')
     return out

@@ -42,7 +42,7 @@ final class RDPSessionController: ObservableObject {
             password: password,
             width: host.effectiveWidth,
             height: host.effectiveHeight,
-            enableNLA: true,
+            enableNLA: ProductDefaults.nlaDefaultEnabled,
             enableSpeaker: host.enableSpeaker,
             optimizeForSpeed: true
         )

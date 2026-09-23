@@ -72,8 +72,11 @@ enum PreferredTransport: String {
 }
 
 struct UDPTransportEvaluator {
-    /// 首切片：探测钩子；真实协商待 FreeRDP UDP 编译选项
+    /// R2: UDP best-effort — never hard-fail MVP (ProductDefaults.udpHardFail == false)
     func evaluatePreferredTransport(udpCapabilityKnown: Bool = false, udpLikelyBlocked: Bool = true) -> PreferredTransport {
+        if ProductDefaults.udpHardFail == false && (!udpCapabilityKnown || udpLikelyBlocked) {
+            return .tcp
+        }
         if udpCapabilityKnown && !udpLikelyBlocked {
             return .udp
         }
