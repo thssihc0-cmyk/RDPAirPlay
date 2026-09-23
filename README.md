@@ -2,6 +2,8 @@
 
 iOS 远程桌面客户端（仓库名 `RDPAirPlay`）：通过 RDP 控制 Windows，**需连接 AirPlay 电视** 进行触控与键盘操作；支持 Microsoft Remote Desktop 风格软键盘、可调分辨率、弱网灰度/黑白，以及双向音频（含远程微信接听场景）。
 
+> **macOS 自用客户端（macrdp）**：独立 SwiftUI 应用，见 [`macos/README.md`](macos/README.md)。与本 iOS/AirPlay 产品解耦，共享 `native` C 桥接边界。
+
 - 需求（范围、功能 ID、验收）：[docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)
 - 说明（架构、风险、里程碑）：[docs/PROJECT.md](docs/PROJECT.md)
 - 开发（进度、构建、目录）：[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
